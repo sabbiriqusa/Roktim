@@ -19,6 +19,7 @@ export interface Donor {
   requestsManaged?: number;
   joinDate?: string;
   lastDonationDate?: string;
+  isVerified?: boolean;
 }
 
 export interface BloodRequest {

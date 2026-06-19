@@ -44,6 +44,9 @@ export default function DonorList() {
 
   // Apply filters in client side
   const filteredDonors = mergedDonors.filter((donor) => {
+    // Hidden until verified if it is explicitly marked as isVerified === false
+    if (donor.isVerified === false) return false;
+
     // Blood group filter
     if (selectedGroup && donor.bloodGroup !== selectedGroup) return false;
     

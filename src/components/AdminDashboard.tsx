@@ -110,6 +110,18 @@ export default function AdminDashboard({ currentUser, onNavigate }: AdminDashboa
     }
   };
 
+  const handleApproveDonor = async (donorId: string) => {
+    try {
+      await updateDoc(doc(db, 'donors', donorId), {
+        isVerified: true
+      });
+      setActionMessage({ type: 'success', text: 'রক্তদাতার প্রোফাইলটি সফলভাবে ভেরিফাই ও অনুমোদন করা হয়েছে।' });
+    } catch (err) {
+      console.error(err);
+      setActionMessage({ type: 'error', text: 'অনুমোদন করার সময় একটি সমস্যা ঘটেছে।' });
+    }
+  };
+
   const handleUpdateRequestStatus = async (requestId: string, status: 'fulfilled' | 'cancelled' | 'pending') => {
     try {
       await updateDoc(doc(db, 'requests', requestId), {
@@ -157,23 +169,30 @@ export default function AdminDashboard({ currentUser, onNavigate }: AdminDashboa
 
     try {
       const docRef = doc(db, 'donors', editingDonor.id);
-      await updateDoc(docRef, {
-        name: editName,
-        bloodGroup: editBloodGroup,
-        phone: editPhone,
-        location: editLocation,
-        age: Number(editAge),
-        gender: editGender,
-        photoURL: editPhotoURL,
-        institution: editInstitution,
-        workOrganization: editWorkOrganization,
-        role: editRole,
-        donationCount: Number(editDonationCount),
-        requestsManaged: Number(editRequestsManaged),
-        joinDate: editJoinDate,
-        lastDonationDate: editLastDonationDate || null,
-        lastDonatedDate: editLastDonationDate || null,
-      });
+      const updateData = {
+        name: editName || '',
+        bloodGroup: editBloodGroup || 'O+',
+        phone: editPhone || '',
+        location: editLocation || '',
+        age: Number(editAge) || 25,
+        gender: editGender || 'পুরুষ',
+        photoURL: editPhotoURL || '',
+        institution: editInstitution || '',
+        workOrganization: editWorkOrganization || '',
+        role: editRole || '',
+        donationCount: Number(editDonationCount) || 0,
+        requestsManaged: Number(editRequestsManaged) || 0,
+        joinDate: editJoinDate || new Date().toISOString().split('T')[0],
+        lastDonationDate: editLastDonationDate || '',
+        lastDonatedDate: editLastDonationDate || '',
+      };
+
+      // Clean any undefined fields from updateData
+      const cleanedUpdateData = Object.fromEntries(
+        Object.entries(updateData).filter(([_, v]) => v !== undefined)
+      );
+
+      await updateDoc(docRef, cleanedUpdateData);
 
       setEditingDonor(null);
       setActionMessage({ type: 'success', text: 'রক্তদাতার সকল তথ্য সফলভাবে সংশোধন করা হয়েছে।' });
@@ -421,13 +440,23 @@ export default function AdminDashboard({ currentUser, onNavigate }: AdminDashboa
                           </div>
                         </div>
 
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                          donor.isAvailable 
-                            ? 'text-emerald-700 bg-emerald-50 border-emerald-200' 
-                            : 'text-gray-500 bg-gray-50 border-gray-200'
-                        }`}>
-                          {donor.isAvailable ? 'প্রস্তুত (Ready)' : 'বিশ্রামে'}
-                        </span>
+                        <div className="flex flex-col items-end gap-1.5 shrink-0 select-none">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                            donor.isAvailable 
+                              ? 'text-emerald-700 bg-emerald-50 border-emerald-200' 
+                              : 'text-gray-500 bg-gray-50 border-gray-200'
+                          }`}>
+                            {donor.isAvailable ? 'প্রস্তুত (Ready)' : 'বিশ্রামে'}
+                          </span>
+                          
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${
+                            donor.isVerified === false
+                              ? 'text-amber-800 bg-amber-50 border-amber-200 animate-pulse'
+                              : 'text-blue-700 bg-blue-50 border-blue-200'
+                          }`}>
+                            {donor.isVerified === false ? '⏳ পেন্ডিং' : '✓ ভেরিফাইড'}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Contact metadata */}
@@ -444,6 +473,17 @@ export default function AdminDashboard({ currentUser, onNavigate }: AdminDashboa
 
                       {/* Action buttons footer */}
                       <div className="flex gap-2 bg-gray-50/50 p-2 rounded-2xl border border-gray-100 mt-2">
+                        {donor.isVerified === false && (
+                          <button
+                            type="button"
+                            onClick={() => handleApproveDonor(donor.id)}
+                            className="bg-emerald-650 hover:bg-emerald-700 text-white font-sans text-xs font-bold px-3.5 py-2 rounded-xl transition-all shadow-md hover:shadow cursor-pointer text-center select-none flex items-center justify-center gap-1 shrink-0"
+                            title="অনুমোদন ও লাইভ করুন (Approve)"
+                          >
+                            ✓ অনুমোদন
+                          </button>
+                        )}
+
                         <button
                           type="button"
                           onClick={() => handleToggleDonorAvailability(donor.id, donor.isAvailable)}

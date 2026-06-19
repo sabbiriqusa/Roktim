@@ -121,20 +121,26 @@ export default function RegistrationForm({ currentUser, onOpenAuth }: Registrati
         isAvailable,
         age: Number(age),
         gender,
-        lastDonatedDate: lastDonationDate || lastDonatedDate || undefined,
+        lastDonatedDate: lastDonationDate || lastDonatedDate || '',
         isRegisteredDonor: true,
         createdAt: donorProfile?.createdAt || new Date().toISOString(),
-        photoURL,
-        institution,
-        workOrganization,
-        role,
+        photoURL: photoURL || '',
+        institution: institution || '',
+        workOrganization: workOrganization || '',
+        role: role || '',
         donationCount: Number(donationCount),
         requestsManaged: Number(requestsManaged),
-        joinDate,
-        lastDonationDate: lastDonationDate || lastDonatedDate || undefined,
+        joinDate: joinDate || new Date().toISOString().split('T')[0],
+        lastDonationDate: lastDonationDate || lastDonatedDate || '',
+        isVerified: donorProfile?.isVerified ?? false,
       };
 
-      await setDoc(doc(db, 'donors', currentUser.uid), updatedProfile);
+      // Clean any remaining undefined or empty fields to prevent firebase serialization errors
+      const cleanedProfile = Object.fromEntries(
+        Object.entries(updatedProfile).filter(([_, v]) => v !== undefined)
+      );
+
+      await setDoc(doc(db, 'donors', currentUser.uid), cleanedProfile);
       setDonorProfile(updatedProfile);
       setEditMode(false);
       setMessage({ type: 'success', text: 'অভিনন্দন! রক্তদাতা হিসেবে আপনার তথ্য সফলভাবে আপডেট হয়েছে।' });
@@ -499,6 +505,19 @@ export default function RegistrationForm({ currentUser, onOpenAuth }: Registrati
           {donorProfile && !editMode ? (
             /* Digital Wallet Card View */
             <div className="space-y-6 text-left">
+              
+              {/* Verification alert banner */}
+              {donorProfile.isVerified === false && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 text-xs font-sans flex items-start gap-2.5 shadow-sm">
+                  <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-bold">⚠️ প্রোফাইলটি অ্যাডমিন অনুমোদনের অপেক্ষায় রয়েছে (Pending Verification)</p>
+                    <p className="text-gray-600 leading-relaxed">
+                      আপনার রক্তদাতা প্রোফাইলটি সফলভাবে নিবন্ধিত হয়েছে। এটি আমাদের অ্যাডমিন প্যানেল দ্বারা ভেরিফাই হলে স্বয়ংক্রিয়ভাবে মূল রক্তদাতা তালিকায় প্রদর্শিত হবে। ধন্যবাদ আপনার ধৈর্য্যের জন্য!
+                    </p>
+                  </div>
+                </div>
+              )}
               
               {/* Apple Wallet Style Glassmorphic Card */}
               <div className="relative overflow-hidden group shadow-2xl transition-transform duration-300">

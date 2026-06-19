@@ -67,20 +67,27 @@ export default function BloodRequests({ currentUser, onOpenAuth }: BloodRequests
     }
 
     try {
-      await addDoc(collection(db, 'requests'), {
-        patientName,
-        hospitalName,
-        location,
-        bloodGroup,
-        units: Number(units),
-        phone,
-        requiredDate,
-        reason,
-        status: 'pending',
+      const newRequest = {
+        patientName: patientName || '',
+        hospitalName: hospitalName || '',
+        location: location || '',
+        bloodGroup: bloodGroup || 'O+',
+        units: Number(units) || 1,
+        phone: phone || '',
+        requiredDate: requiredDate || '',
+        reason: reason || '',
+        status: 'pending' as const,
         createdAt: new Date().toISOString(),
         requestedBy: currentUser.displayName || 'তাহেরপুর সেবক',
-        requesterUid: currentUser.uid
-      });
+        requesterUid: currentUser.uid || 'guest_unknown'
+      };
+
+      // Clean undefined variables to prevent Firestore serialisation bugs
+      const cleanedRequest = Object.fromEntries(
+        Object.entries(newRequest).filter(([_, v]) => v !== undefined)
+      );
+
+      await addDoc(collection(db, 'requests'), cleanedRequest);
 
       // Clear form
       setPatientName('');

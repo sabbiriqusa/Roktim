@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hospital, MapPin, Phone, Building2, ShieldCheck, HeartHandshake } from 'lucide-react';
+import { Hospital, MapPin, Phone, Building2, ShieldCheck, HeartHandshake, Heart, Settings } from 'lucide-react';
 
 interface Branch {
   nameBn: string;
@@ -58,16 +58,24 @@ export default function BranchesList({ onOpenAdmin }: BranchesListProps) {
   return (
     <div className="w-full max-w-6xl mx-auto py-12 px-4 space-y-8 border-t border-red-100/50 relative">
       
-      {/* Discreet Centered Admin Gateway (Hidden to regular eyes) */}
-      <div className="flex justify-center -mb-4">
+      {/* Centered Admin Gateway (Prominent Settings / Love Icon) */}
+      <div className="flex flex-col items-center justify-center gap-1.5 -mb-6 relative z-10">
         <button
           type="button"
           onClick={onOpenAdmin}
-          className="p-1.5 text-gray-200 hover:text-red-650 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 group/admin"
-          title="🛡️ অ্যাডমিন লগইন"
+          className="relative w-14 h-14 bg-white hover:bg-rose-50 text-red-600 rounded-full border border-red-100 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95 group/admin select-none"
+          title="🛡️ অ্যাডমিন ড্যাশবোর্ড সেটিংস ও লগইন"
         >
-          <ShieldCheck className="w-[18px] h-[18px] opacity-25 group-hover/admin:opacity-100 transition-opacity" />
+          {/* Subtle spinning outer settings accent */}
+          <Settings className="w-5 h-5 absolute text-red-400/40 animate-spin group-hover/admin:text-red-500/80 duration-[12s]" />
+          {/* Breathing Love icon */}
+          <Heart className="w-6 h-6 fill-red-600 text-red-600 stroke-[1.5] relative z-10 animate-pulse" />
+          
+          <div className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full p-1 border border-white shadow-sm flex items-center justify-center">
+            <Settings className="w-2.5 h-2.5 animate-spin" style={{ animationDuration: '4s' }} />
+          </div>
         </button>
+        <span className="text-[10px] text-gray-400 font-bold tracking-wider uppercase">অ্যাডমিন সেটিংস ও লগইন</span>
       </div>
 
       {/* Branches Header */}

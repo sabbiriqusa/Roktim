@@ -40,8 +40,10 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
         errMsg = "পপআপ উইন্ডোটি ব্রাউজার দ্বারা ব্লক করা হয়েছে। অনুগ্রহ করে পপআপ সম্মতি দিন অথবা 'গেস্ট সাইন-ইন' ব্যবহার করুন।";
       } else if (err.code === 'auth/network-request-failed') {
         errMsg = "নেটওয়ার্ক সংযোগে সমস্যা। অনুগ্রহ করে ইন্টারনেট সংযোগ পরীক্ষা করুন।";
+      } else if (err.code === 'auth/unauthorized-domain') {
+        errMsg = "Firebase Authorized Domain ত্রুটি: আপনার Vercel বা GitHub Pages ডোমেইনটি Firebase Console > Authentication > Settings > Authorized Domains-এ যুক্ত করতে হবে। অনুগ্রহ করে এটি যুক্ত করুন, অথবা ডোমেন যুক্ত না করা পর্যন্ত নিচে 'ইমেইল ও নাম দিয়ে সাইন-ইন' বোতামটি ব্যবহার করে বিকল্প উপায়ে তাত্ক্ষণিক স্থায়ী লগ-ইন করুন।";
       } else {
-        errMsg = `ত্রুটি: ${err.message || "অজানা সমস্যা"}. আপনি ইচ্ছে করলে নিচের 'গেস্ট/টেস্ট সাইন-ইন' ব্যবহার করতে পারেন।`;
+        errMsg = `ত্রুটি: ${err.message || "অজানা সমস্যা"}. ডোমেন অথরাইজড না করা থাকলে নিচের 'ইমেইল ও নাম দিয়ে সাইন-ইন' সেশনের মাধ্যমে নিরাপদে স্থায়ী লগইন সম্পন্ন করুন।`;
       }
       setError(errMsg);
     } finally {
@@ -57,12 +59,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
         setError("অনুগ্রহ করে আপনার নাম এবং ইমেইল দুটোই পূরণ করুন।");
         return;
       }
+      // Generate consistent deterministic uid based on email address.
+      // This ensures they retrieve their saved document from Firestore every time!
+      const emailTrimmed = customEmail.trim().toLowerCase();
+      const deterministicUid = 'email_' + emailTrimmed.replace(/[^a-z0-9]/g, '_');
+      
       onLoginSuccess({
-        uid: 'guest_' + Date.now(),
-        email: customEmail,
+        uid: deterministicUid,
+        email: emailTrimmed,
         displayName: customName,
         photoURL: null,
-        isGuest: true
+        isGuest: false
       });
     } else {
       // Fast guest sign in
