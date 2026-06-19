@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Hind Siliguri', sans-serif;
+  --font-bengali: 'Hind Siliguri', sans-serif;
+  --font-english: 'Hind Siliguri', sans-serif;
+  --font-mono: 'Hind Siliguri', sans-serif;
+}
+
+/* Custom background patterns and glassmorphism helpers */
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-red {
+  background: rgba(239, 68, 68, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(239, 68, 68, 0.03);
+}
+
+.blood-drop-pulse {
+  animation: bloodPulse 2s ease-in-out infinite;
+}
+
+@keyframes bloodPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(239, 68, 68, 0));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+  }
+}
+
+.scrolling-notice-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scrolling-notice-content {
+  display: inline-block;
+  animation: scrollNotice 65s linear infinite;
+}
+
+.scrolling-notice-content:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollNotice {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Base body style for Apple's light elegant aesthetic & Professional Polish */
+body {
+  font-family: 'Hind Siliguri', sans-serif;
+  background-color: #fffbfa;
+  color: #1e293b;
+  background-image: bg-gradient-to-br from-rose-50 to-white;
+  background-image: radial-gradient(at 0% 0%, #ffe4e6 0px, transparent 65%),
+                    radial-gradient(at 100% 0%, #fff1f2 0px, transparent 65%),
+                    radial-gradient(at 50% 100%, #ffffff 0px, transparent 100%);
+  background-attachment: fixed;
+}

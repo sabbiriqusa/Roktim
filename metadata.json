@@ -1,0 +1,6 @@
+{
+  "name": "রক্তিম ব্লাড ব্যাংক তাহেরপুর",
+  "description": "Roktim Blood Bank Taherpur is a modern blood bank web application with real-time donor tracking and request system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
