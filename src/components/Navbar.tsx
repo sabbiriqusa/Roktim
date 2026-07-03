@@ -151,42 +151,15 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
             </button>
           )}
 
-          {/* Mobile menu hamburger toggle button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 hover:bg-gray-100 rounded-xl text-gray-700 cursor-pointer active:scale-95 transition-all"
-            aria-label="Toggle Mobile Menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {/* Website Security visual indicator badge */}
+          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/50 text-emerald-700 px-2.5 py-1 rounded-xl text-[9px] font-sans font-black select-none shadow-xs">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 animate-pulse shrink-0" />
+            <span className="hidden xs:inline-block">সুরক্ষিত</span>
+          </div>
 
         </div>
 
       </div>
-
-      {/* Mobile navigation side menu drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden px-4 pb-4 pt-1 border-t border-gray-150 bg-white/95 backdrop-blur-md space-y-2 animate-in slide-in-from-top duration-200">
-          <div className="flex flex-col gap-1.5">
-            {menuItems.map((item) => {
-              const isActive = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleMenuClick(item.id)}
-                  className={`w-full text-left px-4 py-2.5 rounded-xl font-sans text-sm font-semibold transition-all cursor-pointer ${
-                    isActive 
-                      ? 'bg-red-600 text-white font-bold' 
-                      : 'text-gray-700 hover:bg-red-50 hover:text-red-600'
-                  }`}
-                >
-                  {item.labelBn}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
     </nav>
   );

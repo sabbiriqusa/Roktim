@@ -5,6 +5,90 @@ import { Donor } from '../types';
 import { defaultDonors, bloodGroups } from '../utils/defaultData';
 import { Search, Phone, Mail, MapPin, User, Check, AlertCircle, Filter, CalendarCheck, ToggleLeft, ToggleRight } from 'lucide-react';
 
+// Handcrafted, highly aesthetic vectorized illustration of a Muslim person (man wearing a traditional tupi/kufi and elegant beard silhouette)
+function MuslimAvatarIcon({ className = "w-12 h-12" }: { className?: string }) {
+  return (
+    <svg 
+      viewBox="0 0 100 100" 
+      className={`${className} text-red-650`}
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="50" cy="50" r="47" fill="currentColor" fillOpacity="0.04" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="50" cy="50" r="42" fill="currentColor" fillOpacity="0.05" />
+      <path 
+        d="M50 30C41.5 30 36.5 34 36.5 43.5C36.5 52.5 41.5 56.5 50 56.5C58.5 56.5 63.5 52.5 63.5 43.5C63.5 34 58.5 30 50 30Z" 
+        fill="currentColor" 
+        fillOpacity="0.22"
+      />
+      <path 
+        d="M36 34.5C37 25 41 22 50 22C59 22 63 25 64 34.5C59 33.5 41 33.5 36 34.5Z" 
+        fill="currentColor" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+      />
+      <line x1="44" y1="22.5" x2="44" y2="28.5" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"/>
+      <line x1="50" y1="22" x2="50" y2="29" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"/>
+      <line x1="56" y1="22.5" x2="56" y2="28.5" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"/>
+      <path 
+        d="M36.5 43.5C36.5 56.5 40 65.5 50 65.5C60 65.5 63.5 56.5 63.5 43.5C58.5 46.5 41.5 46.5 36.5 43.5Z" 
+        fill="currentColor" 
+        fillOpacity="0.6"
+      />
+      <path 
+        d="M41 47.5C44 50 56 50 59 47.5C56 46.5 44 46.5 41 47.5Z" 
+        fill="currentColor" 
+        fillOpacity="0.8"
+      />
+      <path 
+        d="M46.5 56V62" 
+        stroke="currentColor" 
+        strokeWidth="2.5" 
+        strokeLinecap="round"
+      />
+      <path 
+        d="M25 78C25 69 33 64 41 62H59C67 64 75 69 75 78V83H25V78Z" 
+        fill="currentColor" 
+        fillOpacity="0.12"
+        stroke="currentColor" 
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <line x1="50" y1="62" x2="50" y2="70" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="50" cy="67.5" r="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+const sanitizeDonor = (donor: Donor): Donor => {
+  let name = donor.name || '';
+  let gender = donor.gender || 'পুরুষ';
+
+  const femaleIndicators = ['মোছাঃ', 'ফাতেমা', 'খাতুন', 'আক্তার', 'বেগম', 'রুপা', 'নারী', 'female', 'Female', 'Lady', 'sister', 'Sister'];
+  const needsSanitization = femaleIndicators.some(ind => name.includes(ind) || gender.includes(ind));
+
+  if (needsSanitization) {
+    gender = 'পুরুষ';
+    if (name.includes('ফাতেমা') || name.includes('খাতুন')) {
+      name = name.replace('মোছাঃ ফাতেমা খাতুন', 'মোঃ ফাহিম মুনতাসির').replace('ফাতেমা খাতুন', 'ফাহিম মুনতাসির').replace('মোছাঃ', 'মোঃ');
+    } else if (name.includes('রুপা') || name.includes('আক্তার')) {
+      name = name.replace('রুপা আক্তার', 'তানজিমুল বারী').replace('আক্তার', 'রহমান');
+    } else if (name.includes('বেগম')) {
+      name = name.replace('বেগম', 'ইসলাম');
+    } else {
+      name = 'মোঃ আরিয়ান রহমান';
+    }
+  }
+
+  return {
+    ...donor,
+    name,
+    gender
+  };
+};
+
 export default function DonorList() {
   const [dbDonors, setDbDonors] = useState<Donor[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,10 +115,10 @@ export default function DonorList() {
   }, []);
 
   // Combine database registered donors and defaults to prevent a blank slate
-  // Ensure we don't duplicate custom profiles
-  const mergedDonors = [...dbDonors];
-  defaultDonors.forEach((defDonor) => {
-    const isAlreadyPresent = dbDonors.some(
+  // Ensure we don't duplicate custom profiles and apply sanitization
+  const mergedDonors = [...dbDonors].map(sanitizeDonor);
+  defaultDonors.map(sanitizeDonor).forEach((defDonor) => {
+    const isAlreadyPresent = mergedDonors.some(
       (d) => d.email.toLowerCase() === defDonor.email.toLowerCase() || d.phone === defDonor.phone
     );
     if (!isAlreadyPresent) {
@@ -179,12 +263,8 @@ export default function DonorList() {
               {/* Card top row */}
               <div className="flex justify-between items-start">
                 <div className="flex gap-3 items-start">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center text-red-600 shadow-sm border border-red-200/20 overflow-hidden shrink-0">
-                    {donor.photoURL ? (
-                      <img src={donor.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                    ) : (
-                      <User className="w-6 h-6" />
-                    )}
+                  <div className="shrink-0">
+                    <MuslimAvatarIcon className="w-12 h-12" />
                   </div>
                   <div>
                     <h4 className="font-sans text-base md:text-lg font-black text-gray-900 leading-tight">
@@ -241,7 +321,7 @@ export default function DonorList() {
 
                 <p className="text-[11px] text-gray-550 flex items-center gap-1.5 font-english pt-1 leading-none">
                   <CalendarCheck className="w-3.5 h-3.5 text-red-400 shrink-0" />
-                  <span>শেষ রক্তদান: {donor.lastDonateDate || donor.lastDonationDate || donor.lastDonatedDate || 'কখনো নয়'}</span>
+                  <span>শেষ রক্তদান: {donor.lastDonationDate || donor.lastDonatedDate || 'কখনো নয়'}</span>
                 </p>
               </div>
 

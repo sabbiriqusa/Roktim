@@ -9,6 +9,7 @@ import RegistrationForm from './components/RegistrationForm';
 import Footer from './components/Footer';
 import AuthModal from './components/AuthModal';
 import DateTimeCalendarWidget from './components/DateTimeCalendarWidget';
+import HighlightedDonors from './components/HighlightedDonors';
 import BranchesList from './components/BranchesList';
 import DeveloperProfile from './components/DeveloperProfile';
 import AdminDashboard from './components/AdminDashboard';
@@ -16,6 +17,7 @@ import SponsorAds from './components/SponsorAds';
 import DonationPopup from './components/DonationPopup';
 import AboutNoticeSection from './components/AboutNoticeSection';
 import AdminPassModal from './components/AdminPassModal';
+import BottomNavigation from './components/BottomNavigation';
 import { AppUser } from './types';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './lib/firebase';
@@ -91,7 +93,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-grow">
+      <main className="flex-grow pb-24 md:pb-0">
         
         {/* Dynamic Screen Routing */}
         {currentPage === 'home' && (
@@ -102,6 +104,11 @@ export default function App() {
 
             {/* 2. Horizontal Scrolling Notices */}
             <NoticeBar />
+
+            {/* 2.4 Highlighted Volunteers & Blood Donors Panel */}
+            <div className="w-full max-w-6xl mx-auto px-4 pt-6">
+              <HighlightedDonors />
+            </div>
 
             {/* 2.5 Live Real-time Clock, Date & Calendar schedule Widget */}
             <div className="w-full max-w-6xl mx-auto px-4 pt-6">
@@ -228,6 +235,14 @@ export default function App() {
 
       {/* Landing Fundraising & Operational Donation Popup with Apple styling */}
       <DonationPopup />
+
+      {/* Android Mobile-First Bottom Navigation Bar */}
+      <BottomNavigation 
+        currentPage={currentPage}
+        onNavigate={handleNavigation}
+        currentUser={currentUser}
+        onOpenAuth={() => setAuthModalOpen(true)}
+      />
 
     </div>
   );
