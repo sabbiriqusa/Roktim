@@ -8,11 +8,11 @@ export default function DonationPopup() {
 
   useEffect(() => {
     // Show on homepage mount, but check sessionStorage so it doesn't interrupt repeatedly
-    const donationShown = sessionStorage.getItem('bb_donation_popup_shown_v2');
+    const donationShown = sessionStorage.getItem('roktim_blood_bank_donation_popup_v4');
     if (!donationShown) {
       const timer = setTimeout(() => {
         setIsOpen(true);
-        sessionStorage.setItem('bb_donation_popup_shown_v2', 'true');
+        sessionStorage.setItem('roktim_blood_bank_donation_popup_v4', 'true');
       }, 1200); // Appear elegantly after 1.2 seconds
       return () => clearTimeout(timer);
     }
