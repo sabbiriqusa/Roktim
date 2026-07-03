@@ -14,6 +14,7 @@ import DeveloperProfile from './components/DeveloperProfile';
 import AdminDashboard from './components/AdminDashboard';
 import SponsorAds from './components/SponsorAds';
 import DonationPopup from './components/DonationPopup';
+import AboutNoticeSection from './components/AboutNoticeSection';
 import AdminPassModal from './components/AdminPassModal';
 import { AppUser } from './types';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -162,6 +163,9 @@ export default function App() {
 
               </div>
             </div>
+
+            {/* 4.2 About and Detailed Notice Board section */}
+            <AboutNoticeSection />
 
             {/* 4.5 Sponsor and Partner Clinical Advertisements Section */}
             <SponsorAds />

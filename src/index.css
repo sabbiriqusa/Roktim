@@ -46,23 +46,29 @@
   }
 }
 
-.scrolling-notice-container {
+.seamless-marquee-container {
+  display: flex;
   overflow: hidden;
-  white-space: nowrap;
+  user-select: none;
+  width: 100%;
+  position: relative;
 }
 
-.scrolling-notice-content {
-  display: inline-block;
-  animation: scrollNotice 65s linear infinite;
+.seamless-marquee-track {
+  display: flex;
+  width: max-content;
+  flex-shrink: 0;
+  gap: 4rem;
+  animation: seamless-scroll 220s linear infinite;
 }
 
-.scrolling-notice-content:hover {
+.seamless-marquee-container:hover .seamless-marquee-track {
   animation-play-state: paused;
 }
 
-@keyframes scrollNotice {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+@keyframes seamless-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* Base body style for Apple's light elegant aesthetic & Professional Polish */

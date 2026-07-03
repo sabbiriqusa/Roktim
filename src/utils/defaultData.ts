@@ -1,7 +1,7 @@
 import { Donor, BloodRequest } from '../types';
 
-export const NoticeBn = "তাহেরপুর পৌরসভা ও আশেপাশের এলাকার সকল স্বেচ্ছাসেবী রক্তদাতাদের রক্তিম ব্লাড ব্যাংকে অবদানের জন্য আন্তরিক ধন্যবাদ। কোনো রোগীর জন্য জরুরী রক্তের প্রয়োজন হলে অবিলম্বে আমাদের ব্লাড রিকোয়েস্ট ফর্মে আবেদন করুন।";
-export const NoticeEn = "Sincere thanks to all voluntary blood donors in Taherpur Municipality and surrounding areas for contributing to Roktim Blood Bank. For emergency blood requirements, please submit a blood request form immediately.";
+export const NoticeBn = "রক্তের অভাবে ঝরবে না আর একটিও প্রাণ! তাহেরপুর ও আশেপাশের এলাকার মানুষের সেবায় রাজশাহী কলেজের শিক্ষার্থী সাকিবুল ইসলাম সাব্বিরের উদ্যোগে পথ চলা শুরু করলো ‘রক্তিম ব্লাড ব্যাংক’। আমাদের সাথে স্বেচ্ছাসেবী হিসেবে যুক্ত হতে, ডোনার হিসেবে নাম লেখাতে কিংবা আপনার ক্লিনিক/ডায়াগনস্টিকের বিজ্ঞাপন দিতে আজই যোগাযোগ করুন।";
+export const NoticeEn = "No more lives lost due to lack of blood! Roktim Blood Bank Taherpur has started its journey initiated by Sakibul Islam Sabbir, a student of Rajshahi College, to serve the local community.";
 
 export const defaultDonors: Donor[] = [
   {
