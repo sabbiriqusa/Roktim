@@ -18,6 +18,8 @@ import DonationPopup from './components/DonationPopup';
 import AboutNoticeSection from './components/AboutNoticeSection';
 import AdminPassModal from './components/AdminPassModal';
 import BottomNavigation from './components/BottomNavigation';
+import TeamPage from './components/TeamPage';
+import AboutPage from './components/AboutPage';
 import { AppUser } from './types';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './lib/firebase';
@@ -206,6 +208,14 @@ export default function App() {
             currentUser={currentUser}
             onNavigate={handleNavigation}
           />
+        )}
+
+        {currentPage === 'team' && (
+          <TeamPage />
+        )}
+
+        {currentPage === 'about' && (
+          <AboutPage />
         )}
 
       </main>

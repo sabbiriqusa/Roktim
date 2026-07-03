@@ -54,6 +54,22 @@ export default function Footer({ onNavigate, onOpenDevProfile }: FooterProps) {
             </li>
             <li>
               <button
+                onClick={() => onNavigate('team')}
+                className="font-sans text-sm text-gray-500 hover:text-red-600 transition-colors cursor-pointer flex items-center gap-2"
+              >
+                ✨ আমাদের রক্তিম টিম (Our Leadership)
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => onNavigate('about')}
+                className="font-sans text-sm text-gray-500 hover:text-red-600 transition-colors cursor-pointer flex items-center gap-2"
+              >
+                ℹ️ আমাদের সম্পর্কে ও দর্শন (About Us)
+              </button>
+            </li>
+            <li>
+              <button
                 onClick={() => onNavigate('register')}
                 className="font-sans text-sm text-gray-500 hover:text-red-600 transition-colors cursor-pointer flex items-center gap-2"
               >

@@ -19,6 +19,8 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
     { id: 'home', labelBn: 'হোম', labelEn: 'Home' },
     { id: 'donors', labelBn: 'রক্তদাতা তালিকা', labelEn: 'Donors' },
     { id: 'requests', labelBn: 'রক্তের আবেদন', labelEn: 'Requests' },
+    { id: 'team', labelBn: 'রক্তিম টিম', labelEn: 'Our Team' },
+    { id: 'about', labelBn: 'আমাদের সম্পর্কে', labelEn: 'About Us' },
     { id: 'register', labelBn: 'রক্তদাতা নিবন্ধন', labelEn: 'Register' }
   ];
 
