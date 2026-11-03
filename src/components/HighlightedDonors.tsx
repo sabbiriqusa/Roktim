@@ -356,9 +356,20 @@ export default function HighlightedDonors() {
 
                   <div className="flex gap-3.5 items-start">
                     
-                    {/* Handcrafted Stylized Muslim Avatar Icon (Unified Red Brand Theme) */}
+                    {/* Handcrafted Stylized Avatar or Real Photo */}
                     <div className="relative shrink-0 text-red-600">
-                      <MuslimAvatarIcon className="w-13 h-13" />
+                      {donor.photoURL ? (
+                        <div className="w-13 h-13 rounded-2xl overflow-hidden bg-red-50 border border-red-200/80 shadow-xs flex items-center justify-center">
+                          <img 
+                            src={donor.photoURL} 
+                            alt={donor.name} 
+                            className="w-full h-full object-cover" 
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      ) : (
+                        <MuslimAvatarIcon className="w-13 h-13" />
+                      )}
                       
                       {/* Integrated Blood Group Tag */}
                       <span className="absolute -bottom-1 -right-1 bg-red-600 text-white font-sans text-[10px] font-black px-1.5 py-0.5 rounded-md border border-white shadow-xs scale-90">

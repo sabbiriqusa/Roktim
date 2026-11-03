@@ -4,22 +4,32 @@ export interface Donor {
   email: string;
   phone: string;
   bloodGroup: string;
-  lastDonatedDate?: string;
+  gender: string;
+  occupation: string;
+  address: string;
   location: string;
+  age: number;
   isAvailable: boolean;
-  gender?: string;
-  age?: number;
   isRegisteredDonor: boolean;
   createdAt: string;
   photoURL?: string;
   institution?: string;
   workOrganization?: string;
-  role?: string; // e.g. "volunteer" or "donor" or "স্বেচ্ছাসেবী" or "রক্তদাতা"
+  role?: string; // e.g. "রক্তদাতা" or "স্বেচ্ছাসেবী"
   donationCount?: number;
   requestsManaged?: number;
   joinDate?: string;
   lastDonationDate?: string;
+  lastDonatedDate?: string;
   isVerified?: boolean;
+  verificationMethod?: 'google' | 'phone' | 'email';
+  phoneVerified?: boolean;
+  // Real-time location tracking
+  latitude?: number;
+  longitude?: number;
+  locationAccuracy?: number;
+  lastLocationUpdate?: string;
+  isLocationSharing?: boolean;
 }
 
 export interface BloodRequest {
@@ -36,6 +46,22 @@ export interface BloodRequest {
   createdAt: string;
   requestedBy: string;
   requesterUid: string;
+  urgencyLevel?: 'emergency' | 'urgent' | 'regular';
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface AppNotification {
+  id: string;
+  requestId: string;
+  bloodGroup: string;
+  patientName: string;
+  hospitalName: string;
+  location: string;
+  phone: string;
+  timestamp: string;
+  read: boolean;
+  type: 'blood_request' | 'status_update' | 'system';
 }
 
 export interface Announcement {
@@ -59,7 +85,9 @@ export interface AppUser {
   uid: string;
   email: string | null;
   displayName: string | null;
+  phoneNumber?: string | null;
   photoURL: string | null;
   isGuest?: boolean;
+  phoneVerified?: boolean;
+  verifiedBy?: 'google' | 'phone' | 'email';
 }
-

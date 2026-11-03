@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#991b1b" />
+      <stop offset="50%" stop-color="#dc2626" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </linearGradient>
+    <linearGradient id="dropGrad" x1="0%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#fee2e2" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#450a0a" flood-opacity="0.4" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="6" />
+  
+  <!-- Stylized Blood Drop with Heart -->
+  <g filter="url(#shadow)">
+    <!-- Blood Drop Shape -->
+    <path d="M256 90 C256 90 370 230 370 320 C370 382.95 318.95 434 256 434 C193.05 434 142 382.95 142 320 C142 230 256 90 256 90 Z" fill="url(#dropGrad)" />
+    <!-- Glossy Highlight on Drop -->
+    <ellipse cx="215" cy="265" rx="28" ry="60" transform="rotate(-30 215 265)" fill="#ffffff" fill-opacity="0.5" />
+    <!-- Red Cross / Heart Emblem Inside -->
+    <path d="M256 265 C256 250 240 235 224 235 C205 235 190 250 190 270 C190 295 220 322 256 348 C292 322 322 295 322 270 C322 250 307 235 288 235 C272 235 256 250 256 265 Z" fill="#dc2626" />
+  </g>
+</svg>

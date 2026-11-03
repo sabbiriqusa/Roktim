@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { AppUser } from '../types';
-import { Heart, LogIn, LogOut, Menu, X, User, ShieldAlert, Award, Grid, Sparkles, ShieldCheck } from 'lucide-react';
+import { Heart, LogIn, LogOut, Menu, X, User, Award, Flame, Compass, ShieldCheck } from 'lucide-react';
 import { signOut } from '../lib/firebase';
+import { PWAInstallButton } from './PWAInstallButton';
+import NotificationCenter from './NotificationCenter';
 
 interface NavbarProps {
   currentUser: AppUser | null;
@@ -17,11 +19,13 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
 
   const menuItems = [
     { id: 'home', labelBn: 'হোম', labelEn: 'Home' },
+    { id: 'timeline', labelBn: 'লাইভ টাইমলাইন', labelEn: 'Timeline', badge: 'New' },
+    { id: 'location', labelBn: 'লাইভ লোকেশন', labelEn: 'Location', badge: 'GPS' },
     { id: 'donors', labelBn: 'রক্তদাতা তালিকা', labelEn: 'Donors' },
     { id: 'requests', labelBn: 'রক্তের আবেদন', labelEn: 'Requests' },
-    { id: 'team', labelBn: 'রক্তিম টিম', labelEn: 'Our Team' },
-    { id: 'about', labelBn: 'আমাদের সম্পর্কে', labelEn: 'About Us' },
-    { id: 'register', labelBn: 'রক্তদাতা নিবন্ধন', labelEn: 'Register' }
+    { id: 'register', labelBn: 'নিবন্ধন ফরম', labelEn: 'Register' },
+    { id: 'team', labelBn: 'রক্তিম টিম', labelEn: 'Team' },
+    { id: 'about', labelBn: 'সম্পর্কে', labelEn: 'About' },
   ];
 
   const handleLogoutClick = async () => {
@@ -40,10 +44,10 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
   };
 
   return (
-    <nav className="sticky top-0 z-40 w-full glass bg-white/75 border-b border-white/50 shadow-sm backdrop-blur-md">
-      <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
+    <nav className="sticky top-0 z-40 w-full glass bg-white/80 border-b border-white/60 shadow-sm backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
         
-        {/* Logo brand */}
+        {/* Left: Brand logo */}
         <div 
           onClick={() => handleMenuClick('home')} 
           className="flex items-center gap-2.5 cursor-pointer group shrink-0"
@@ -51,39 +55,55 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
           <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-500/20 blood-drop-pulse transition-transform group-hover:scale-105 duration-300">
             <Heart className="w-5 h-5 fill-white" />
           </div>
-          <span className="font-sans text-lg md:text-xl font-black text-gray-950 tracking-tight">
+          <span className="font-sans text-base sm:text-lg md:text-xl font-black text-gray-950 tracking-tight">
             রক্তিম <span className="text-red-600 transition-colors group-hover:text-red-700">ব্লাড ব্যাংক</span>
           </span>
         </div>
 
-        {/* Desktop navigation menu */}
-        <div className="hidden md:flex items-center gap-1.5 bg-gray-150/40 p-1.5 rounded-2xl border border-white/40">
+        {/* Center: Desktop Navigation Bar */}
+        <div className="hidden lg:flex items-center gap-1 bg-gray-150/40 p-1.5 rounded-2xl border border-white/40">
           {menuItems.map((item) => {
             const isActive = currentPage === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                className={`relative px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer font-sans flex items-center gap-1 ${
                   isActive 
-                    ? 'bg-red-600 text-white shadow-xl shadow-red-500/10 font-bold scale-[1.02]' 
-                    : 'text-gray-600 hover:text-red-600 hover:bg-white/50'
+                    ? 'bg-red-600 text-white shadow-md shadow-red-500/20 scale-[1.02]' 
+                    : 'text-gray-600 hover:text-red-600 hover:bg-white/60'
                 }`}
               >
-                {item.labelBn}
+                {item.id === 'timeline' && <Flame className="w-3 h-3 text-amber-300 fill-amber-300" />}
+                {item.id === 'location' && <Compass className="w-3 h-3 text-emerald-400" />}
+                <span>{item.labelBn}</span>
+                {item.badge && !isActive && (
+                  <span className="text-[9px] bg-red-100 text-red-600 px-1 py-0.2 rounded-full font-english font-black">
+                    {item.badge}
+                  </span>
+                )}
               </button>
             );
           })}
         </div>
 
-        {/* User profile controls & Sign in */}
-        <div className="flex items-center gap-3 relative">
+        {/* Right: Controls (Install PWA, Notification Center, User Auth) */}
+        <div className="flex items-center gap-2 sm:gap-2.5 relative">
 
+          {/* In-App PWA Install Button */}
+          <div className="hidden sm:block">
+            <PWAInstallButton variant="compact" />
+          </div>
+
+          {/* Automated Blood Request Notification Center Bell */}
+          <NotificationCenter onNavigateToRequestsPage={() => onNavigate('requests')} />
+
+          {/* User Profile / Auth Button */}
           {currentUser ? (
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 px-2.5 py-1.5 bg-red-50/50 hover:bg-red-50 text-red-700 rounded-2xl transition-all cursor-pointer border border-red-150 relative h-9"
+                className="flex items-center gap-2 px-2.5 py-1.5 bg-red-50/60 hover:bg-red-50 text-red-700 rounded-2xl transition-all cursor-pointer border border-red-200 relative h-9"
               >
                 {currentUser.photoURL ? (
                   <img 
@@ -98,26 +118,29 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
                   </div>
                 )}
                 
-                <span className="font-sans text-xs font-bold leading-none hidden sm:inline-block max-w-[90px] truncate">
+                <span className="font-sans text-xs font-bold leading-none hidden sm:inline-block max-w-[85px] truncate">
                   {currentUser.displayName}
                 </span>
 
-                {currentUser.isGuest && (
-                  <span className="bg-red-600 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full scale-90 -mr-1">
-                    GUEST
+                {currentUser.phoneVerified && (
+                  <span className="hidden md:inline-block text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">
+                    ✓ Verified
                   </span>
                 )}
               </button>
 
-              {/* Elegant floating dropdown */}
+              {/* Floating Profile Dropdown */}
               {dropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-                  <div className="absolute right-0 mt-2.5 w-48 bg-white/95 rounded-2xl shadow-xl border border-gray-100 py-2.5 z-20 animate-in fade-in slide-in-from-top-3 duration-150 backdrop-blur-md">
+                  <div className="absolute right-0 mt-2.5 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2.5 z-20 animate-in fade-in slide-in-from-top-3 duration-150 backdrop-blur-md font-sans">
                     
-                    <div className="px-4 py-1.5 border-b border-gray-50 mb-1">
-                      <p className="text-[10px] text-gray-400 font-sans leading-none">লগড-ইন একাউন্ট</p>
-                      <p className="text-xs font-bold text-gray-800 font-sans truncate mt-1">{currentUser.displayName}</p>
+                    <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                      <p className="text-[10px] text-gray-400 leading-none">যাচাইকৃত একাউন্ট</p>
+                      <p className="text-xs font-bold text-gray-900 truncate mt-1">{currentUser.displayName}</p>
+                      <p className="text-[10px] text-emerald-600 font-bold mt-0.5">
+                        {currentUser.verifiedBy === 'phone' ? '📱 ফোন নাম্বার যাচাইকৃত' : '🌐 গুগল যাচাইকৃত'}
+                      </p>
                     </div>
 
                     <button
@@ -125,15 +148,26 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
                         onNavigate('register');
                         setDropdownOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-sans flex items-center gap-2 cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2 cursor-pointer"
                     >
                       <Award className="w-3.5 h-3.5 text-red-600" />
-                      আমার দাতা কার্ড (Profile)
+                      আমার ডিজিটাল দাতা কার্ড
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onNavigate('location');
+                        setDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2 cursor-pointer"
+                    >
+                      <Compass className="w-3.5 h-3.5 text-emerald-600" />
+                      লাইভ জিপিএস লোকেশন শেয়ার
                     </button>
 
                     <button
                       onClick={handleLogoutClick}
-                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors font-sans flex items-center gap-2 border-t border-gray-50 pt-2 cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2 border-t border-gray-100 pt-2 cursor-pointer"
                     >
                       <LogOut className="w-3.5 h-3.5 text-gray-400" />
                       সাইন-আউট (Logout)
@@ -146,22 +180,53 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
           ) : (
             <button
               onClick={onOpenAuth}
-              className="flex items-center gap-2 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold shadow-lg shadow-red-500/10 cursor-pointer transition-all active:scale-95 border border-red-500/5 relative overflow-hidden"
+              className="flex items-center gap-1.5 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl text-xs font-bold shadow-md shadow-red-500/10 cursor-pointer transition-all active:scale-95 font-sans"
             >
-              <LogIn className="w-4 h-4 shadow-sm" />
-              <span>লগ-ইন করুন</span>
+              <LogIn className="w-3.5 h-3.5" />
+              <span>লগ-ইন</span>
             </button>
           )}
 
-          {/* Website Security visual indicator badge */}
-          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/50 text-emerald-700 px-2.5 py-1 rounded-xl text-[9px] font-sans font-black select-none shadow-xs">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 animate-pulse shrink-0" />
-            <span className="hidden xs:inline-block">সুরক্ষিত</span>
-          </div>
+          {/* Mobile hamburger menu toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-gray-700 hover:text-red-600 rounded-xl hover:bg-gray-100 transition cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
 
         </div>
 
       </div>
+
+      {/* Mobile drawer menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-white/95 border-b border-gray-200 px-4 py-3 space-y-2 animate-in slide-in-from-top font-sans shadow-lg backdrop-blur-md">
+          <div className="pb-2 mb-2 border-b border-gray-150 flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-500">মেনু নেভিগেশন</span>
+            <PWAInstallButton variant="compact" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleMenuClick(item.id)}
+                className={`w-full text-left p-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+                  currentPage === item.id
+                    ? 'bg-red-600 text-white shadow-sm'
+                    : 'bg-gray-50 text-gray-700 hover:bg-red-50 hover:text-red-600'
+                }`}
+              >
+                {item.id === 'timeline' && <Flame className="w-3.5 h-3.5 text-amber-300" />}
+                {item.id === 'location' && <Compass className="w-3.5 h-3.5 text-emerald-400" />}
+                <span>{item.labelBn}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
     </nav>
   );

@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "Donor": {
+      "title": "Donor",
+      "description": "Registered blood donor profile and location coordinates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "bloodGroup": { "type": "string" },
+        "gender": { "type": "string" },
+        "occupation": { "type": "string" },
+        "address": { "type": "string" },
+        "location": { "type": "string" },
+        "age": { "type": "number" },
+        "isAvailable": { "type": "boolean" },
+        "isRegisteredDonor": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "isVerified": { "type": "boolean" },
+        "phoneVerified": { "type": "boolean" },
+        "verificationMethod": { "type": "string" },
+        "isLocationSharing": { "type": "boolean" }
+      },
+      "required": ["name", "email", "phone", "bloodGroup", "gender", "occupation", "address"]
+    },
+    "BloodRequest": {
+      "title": "BloodRequest",
+      "description": "Emergency blood request posted for patients",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "patientName": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "location": { "type": "string" },
+        "bloodGroup": { "type": "string" },
+        "units": { "type": "number" },
+        "phone": { "type": "string" },
+        "requiredDate": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "fulfilled", "cancelled"] },
+        "createdAt": { "type": "string" },
+        "requestedBy": { "type": "string" },
+        "requesterUid": { "type": "string" }
+      },
+      "required": ["patientName", "hospitalName", "location", "bloodGroup", "units", "phone", "status"]
+    }
+  },
+  "firestore": {
+    "/donors/{donorId}": {
+      "schema": { "$ref": "#/entities/Donor" },
+      "description": "Public and verified blood donor profiles and location telemetry"
+    },
+    "/requests/{requestId}": {
+      "schema": { "$ref": "#/entities/BloodRequest" },
+      "description": "Public emergency blood request postings"
+    }
+  }
+}

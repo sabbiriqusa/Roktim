@@ -291,8 +291,15 @@ export default function DonorList() {
               <div className="space-y-2.5 my-3 pt-3 border-t border-gray-100/60 text-left font-sans text-xs">
                 <p className="text-gray-600 flex items-center gap-1.5 leading-tight">
                   <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                  <span className="truncate font-medium">{donor.location}</span>
+                  <span className="truncate font-medium">{donor.address || donor.location}</span>
                 </p>
+
+                {donor.occupation && (
+                  <p className="text-gray-600 flex items-center gap-1.5 leading-snug">
+                    <span className="text-gray-400 font-bold shrink-0">পেশা:</span>
+                    <span className="truncate font-semibold text-gray-800">{donor.occupation}</span>
+                  </p>
+                )}
 
                 {donor.institution && (
                   <p className="text-gray-550 flex items-start gap-1.5 leading-snug">

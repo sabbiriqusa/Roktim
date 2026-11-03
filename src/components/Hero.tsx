@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Heart, Search, PlusCircle, Users, Activity, CheckCircle, MapPin } from 'lucide-react';
+import { Heart, Search, PlusCircle, Users, Activity, CheckCircle, MapPin, Compass, Flame, UserPlus } from 'lucide-react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { defaultDonors, defaultRequests } from '../utils/defaultData';
@@ -61,7 +61,7 @@ export default function Hero({ onNavigate, onOpenAuth, userLoggedIn }: HeroProps
   }, []);
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-12 px-4 text-center space-y-12 relative z-10">
+    <div className="w-full max-w-6xl mx-auto py-10 px-4 text-center space-y-10 relative z-10">
       
       {/* Intro Text header */}
       <div className="space-y-4">
@@ -79,72 +79,80 @@ export default function Hero({ onNavigate, onOpenAuth, userLoggedIn }: HeroProps
         </h1>
         
         <p className="font-sans text-sm md:text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
-          একটি জীবন রক্ষাকারী স্বেচ্ছাসেবী সংঘ। আমাদের মাধ্যমে আপনি দ্রুত রক্তের সন্ধান করতে পারবেন, রক্তের রিকোয়েস্ট পোস্ট করতে পারবেন এবং স্বেচ্ছায় একজন নিবন্ধিত রক্তদাতা হিসেবে মানবতার সেবায় যুক্ত হতে পারেন।
+          একটি জীবন রক্ষাকারী ডিজিটাল প্ল্যাটফর্ম। রক্তের সন্ধান করুন, লাইভ লোকেশন রাডারে নিকটবর্তী দাতা খুঁজুন এবং স্বয়ংক্রিয় নোটিফিকেশনের মাধ্যমে রক্ত রিকোয়েস্ট সম্প্রচার করুন।
         </p>
       </div>
 
       {/* Primary CTA Buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-lg mx-auto">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-xl mx-auto">
         <button
-          onClick={() => onNavigate('donors')}
-          className="w-full flex items-center justify-center gap-2.5 bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-base py-4 px-6 rounded-2xl shadow-xl shadow-red-500/20 hover:shadow-red-500/35 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+          onClick={() => onNavigate('timeline')}
+          className="w-full sm:w-auto flex items-center justify-center gap-2.5 bg-red-600 hover:bg-red-700 text-white font-sans font-bold text-sm sm:text-base py-3.5 px-6 rounded-2xl shadow-xl shadow-red-500/20 hover:shadow-red-500/35 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
         >
-          <Search className="w-5 h-5" />
-          রক্তদাতা খুঁজুন
+          <Flame className="w-5 h-5 fill-white text-white" />
+          লাইভ রিকোয়েস্ট টাইমলাইন
         </button>
 
         <button
-          onClick={() => onNavigate('requests')}
-          className="w-full flex items-center justify-center gap-2.5 bg-white hover:bg-gray-50 text-gray-800 font-sans font-bold text-base py-4 px-6 rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+          onClick={() => onNavigate('location')}
+          className="w-full sm:w-auto flex items-center justify-center gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-sm sm:text-base py-3.5 px-6 rounded-2xl shadow-xl shadow-emerald-600/20 hover:shadow-emerald-600/35 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
         >
-          <PlusCircle className="w-5 h-5 text-red-600" />
-          রক্তের আবেদন করুন
+          <Compass className="w-5 h-5" />
+          রিয়েল-টাইম ডোনার রাডার
+        </button>
+
+        <button
+          onClick={() => onNavigate('register')}
+          className="w-full sm:w-auto flex items-center justify-center gap-2.5 bg-white hover:bg-gray-50 text-gray-800 font-sans font-bold text-sm sm:text-base py-3.5 px-5 rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+        >
+          <UserPlus className="w-5 h-5 text-red-600" />
+          রক্তদাতা নিবন্ধন
         </button>
       </div>
 
       {/* Bento Grid Stats Panel */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-2">
         
         {/* Stat 1 */}
-        <div className="glass-card p-6 rounded-3xl border border-white/60 text-center flex flex-col justify-between h-40">
-          <div className="w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 mb-2 mx-auto shadow-inner">
-            <Users className="w-5 h-5" />
+        <div className="glass-card p-6 rounded-3xl border border-white/60 text-center flex flex-col justify-between h-36">
+          <div className="w-9 h-9 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 mb-1 mx-auto shadow-inner">
+            <Users className="w-4.5 h-4.5" />
           </div>
           <div>
-            <div className="text-4xl font-extrabold text-gray-900 font-english">
+            <div className="text-3xl font-extrabold text-gray-900 font-english">
               <AnimatedCounter value={stats.totalDonors} />+
             </div>
-            <div className="text-sm font-medium text-gray-500 font-sans mt-1">
+            <div className="text-xs font-semibold text-gray-500 font-sans mt-0.5">
               নিবন্ধিত রক্তদাতা (Donors)
             </div>
           </div>
         </div>
 
         {/* Stat 2 */}
-        <div className="glass-card p-6 rounded-3xl border border-white/60 text-center flex flex-col justify-between h-40">
-          <div className="w-10 h-10 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 mb-2 mx-auto shadow-inner">
-            <Activity className="w-5 h-5 text-red-500 animate-pulse" />
+        <div className="glass-card p-6 rounded-3xl border border-white/60 text-center flex flex-col justify-between h-36">
+          <div className="w-9 h-9 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 mb-1 mx-auto shadow-inner">
+            <Activity className="w-4.5 h-4.5 text-red-500 animate-pulse" />
           </div>
           <div>
-            <div className="text-4xl font-extrabold text-red-600 font-english">
+            <div className="text-3xl font-extrabold text-red-600 font-english">
               <AnimatedCounter value={stats.activeRequests} />
             </div>
-            <div className="text-sm font-medium text-gray-500 font-sans mt-1">
+            <div className="text-xs font-semibold text-gray-500 font-sans mt-0.5">
               জরুরি রক্তের রিকোয়েস্ট (Active)
             </div>
           </div>
         </div>
 
         {/* Stat 3 */}
-        <div className="glass-card p-6 rounded-3xl border border-white/60 text-center flex flex-col justify-between h-40">
-          <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-2 mx-auto shadow-inner">
-            <CheckCircle className="w-5 h-5" />
+        <div className="glass-card p-6 rounded-3xl border border-white/60 text-center flex flex-col justify-between h-36">
+          <div className="w-9 h-9 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-1 mx-auto shadow-inner">
+            <CheckCircle className="w-4.5 h-4.5" />
           </div>
           <div>
-            <div className="text-4xl font-extrabold text-emerald-600 font-english">
+            <div className="text-3xl font-extrabold text-emerald-600 font-english">
               <AnimatedCounter value={stats.fulfilledRequests + 18} />
             </div>
-            <div className="text-sm font-medium text-gray-500 font-sans mt-1">
+            <div className="text-xs font-semibold text-gray-500 font-sans mt-0.5">
               সফল রক্তদান সমন্বয় (Fulfilled)
             </div>
           </div>
@@ -154,12 +162,12 @@ export default function Hero({ onNavigate, onOpenAuth, userLoggedIn }: HeroProps
 
       {/* Quick notice indicator */}
       {!userLoggedIn && (
-        <p className="font-sans text-xs text-gray-400 mt-2">
+        <p className="font-sans text-xs text-gray-400">
           💡 এখনো একাউন্ট খুলেননি?{' '}
-          <button onClick={onOpenAuth} className="text-red-600 hover:underline font-bold">
-            এখানে লগ-ইন করুন
+          <button onClick={onOpenAuth} className="text-red-600 hover:underline font-bold cursor-pointer">
+            এখানে গুগল বা ফোন নাম্বার দিয়ে যাচাই করুন
           </button>{' '}
-          এবং আপনার রক্তের গ্রুপ প্রদান করে একজন গর্বিত রক্তদাতা হোন!
+          এবং ক্লাউডে সংরক্ষিত রক্তদাতা কার্ড তৈরি করুন!
         </p>
       )}
 

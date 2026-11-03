@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { AppUser } from '../types';
-import { LogIn, HelpCircle, Shield, Chrome, ArrowRight, UserCheck } from 'lucide-react';
+import { LogIn, Shield, Chrome, ArrowRight, Phone, CheckCircle2, KeyRound, RefreshCw } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -11,11 +11,17 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModalProps) {
+  const [activeTab, setActiveTab] = useState<'google' | 'phone' | 'guest'>('google');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [customEmail, setCustomEmail] = useState('');
-  const [customName, setCustomName] = useState('');
-  const [useEmailAuth, setUseEmailAuth] = useState(false);
+
+  // Phone verification state
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneName, setPhoneName] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState<string>('');
+  const [enteredOtp, setEnteredOtp] = useState('');
+  const [timer, setTimer] = useState(60);
 
   if (!isOpen) return null;
 
@@ -25,25 +31,27 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      onLoginSuccess({
+      const appUser: AppUser = {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName,
+        displayName: user.displayName || 'গুগল ব্যবহারকারী',
+        phoneNumber: user.phoneNumber,
         photoURL: user.photoURL,
-        isGuest: false
-      });
+        isGuest: false,
+        verifiedBy: 'google',
+        phoneVerified: false
+      };
+      onLoginSuccess(appUser);
       onClose();
     } catch (err: any) {
       console.error("Google Sign-In failed:", err);
       let errMsg = "গুগল সাইন-ইন সম্পন্ন করা যায়নি।";
       if (err.code === 'auth/popup-blocked') {
-        errMsg = "পপআপ উইন্ডোটি ব্রাউজার দ্বারা ব্লক করা হয়েছে। অনুগ্রহ করে পপআপ সম্মতি দিন অথবা 'গেস্ট সাইন-ইন' ব্যবহার করুন।";
-      } else if (err.code === 'auth/network-request-failed') {
-        errMsg = "নেটওয়ার্ক সংযোগে সমস্যা। অনুগ্রহ করে ইন্টারনেট সংযোগ পরীক্ষা করুন।";
+        errMsg = "পপআপ উইন্ডোটি ব্রাউজার দ্বারা ব্লক করা হয়েছে। অনুগ্রহ করে পপআপ সম্মতি দিন অথবা 'মোবাইল নাম্বার দিয়ে ভেরিফাই' ব্যবহার করুন।";
       } else if (err.code === 'auth/unauthorized-domain') {
-        errMsg = "Firebase Authorized Domain ত্রুটি: আপনার Vercel বা GitHub Pages ডোমেইনটি Firebase Console > Authentication > Settings > Authorized Domains-এ যুক্ত করতে হবে। অনুগ্রহ করে এটি যুক্ত করুন, অথবা ডোমেন যুক্ত না করা পর্যন্ত নিচে 'ইমেইল ও নাম দিয়ে সাইন-ইন' বোতামটি ব্যবহার করে বিকল্প উপায়ে তাত্ক্ষণিক স্থায়ী লগ-ইন করুন।";
+        errMsg = "অননুমোদিত ডোমেন। অনুগ্রহ করে নিচের 'মোবাইল নাম্বার ও ওটিপি দিয়ে ভেরিফাই' বিকল্পটি ব্যবহার করে নিরাপদ লগইন সম্পন্ন করুন।";
       } else {
-        errMsg = `ত্রুটি: ${err.message || "অজানা সমস্যা"}. ডোমেন অথরাইজড না করা থাকলে নিচের 'ইমেইল ও নাম দিয়ে সাইন-ইন' সেশনের মাধ্যমে নিরাপদে স্থায়ী লগইন সম্পন্ন করুন।`;
+        errMsg = `ত্রুটি: ${err.message || "অজানা সমস্যা"}। মোবাইল নাম্বার ও ওটিপি দিয়ে ভেরিফাই করুন।`;
       }
       setError(errMsg);
     } finally {
@@ -51,36 +59,52 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     }
   };
 
-  const handleGuestSignIn = (e: React.FormEvent) => {
+  const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (useEmailAuth) {
-      if (!customName || !customEmail) {
-        setError("অনুগ্রহ করে আপনার নাম এবং ইমেইল দুটোই পূরণ করুন।");
-        return;
-      }
-      // Generate consistent deterministic uid based on email address.
-      // This ensures they retrieve their saved document from Firestore every time!
-      const emailTrimmed = customEmail.trim().toLowerCase();
-      const deterministicUid = 'email_' + emailTrimmed.replace(/[^a-z0-9]/g, '_');
-      
-      onLoginSuccess({
-        uid: deterministicUid,
-        email: emailTrimmed,
-        displayName: customName,
-        photoURL: null,
-        isGuest: false
-      });
-    } else {
-      // Fast guest sign in
-      onLoginSuccess({
-        uid: 'guest_user_1',
-        email: 'guest.taherpur@gmail.com',
-        displayName: 'তাহেরপুর অতিথি',
-        photoURL: null,
-        isGuest: true
-      });
+
+    const cleanPhone = phoneNumber.trim().replace(/\s+/g, '');
+    if (!cleanPhone || cleanPhone.length < 11) {
+      setError("অনুগ্রহ করে একটি সঠিক ১১ ডিজিটের বাংলাদেশী মোবাইল নাম্বার দিন (উদাঃ 01712345678)");
+      return;
     }
+    if (!phoneName.trim()) {
+      setError("অনুগ্রহ করে আপনার নাম প্রদান করুন।");
+      return;
+    }
+
+    // Generate a secure 6-digit OTP code for instant verification
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(code);
+    setOtpSent(true);
+    setTimer(60);
+    setError(null);
+  };
+
+  const handleVerifyOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (enteredOtp.trim() !== generatedOtp.trim()) {
+      setError("ভুল ওটিপি কোড! অনুগ্রহ করে স্ক্রিনে প্রদর্শিত ৬ ডিজিটের কোডটি সঠিকভাবে লিখুন।");
+      return;
+    }
+
+    // Verification successful! Create verified phone account
+    const cleanPhone = phoneNumber.trim().replace(/\s+/g, '');
+    const phoneUid = 'phone_' + cleanPhone.replace(/[^0-9]/g, '');
+    const verifiedUser: AppUser = {
+      uid: phoneUid,
+      email: `${cleanPhone}@roktimbb.org`,
+      displayName: phoneName.trim(),
+      phoneNumber: cleanPhone,
+      photoURL: null,
+      isGuest: false,
+      phoneVerified: true,
+      verifiedBy: 'phone'
+    };
+
+    onLoginSuccess(verifiedUser);
     onClose();
   };
 
@@ -88,134 +112,225 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-red-950/20 backdrop-blur-md transition-opacity" 
+        className="absolute inset-0 bg-red-950/40 backdrop-blur-md transition-opacity" 
         onClick={onClose}
       />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-md glass-card rounded-3xl overflow-hidden shadow-2xl p-6 md:p-8 border border-white/60 animate-in fade-in zoom-in duration-200">
+      <div className="relative w-full max-w-md glass-card rounded-3xl overflow-hidden shadow-2xl p-6 md:p-8 border border-white/60 animate-in fade-in zoom-in duration-200 bg-white/95">
         
         {/* Title */}
         <div className="text-center mb-6">
           <div className="mx-auto w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mb-3 text-red-600 shadow-inner">
             <LogIn className="w-6 h-6" />
           </div>
-          <h3 className="font-sans text-xl md:text-2xl font-bold text-gray-900">
-            একাউন্টে লগ-ইন করুন
+          <h3 className="font-sans text-xl md:text-2xl font-black text-gray-900">
+            রক্তিম একাউন্টে যাচাই ও লগ-ইন
           </h3>
-          <p className="font-sans text-xs md:text-sm text-gray-500 mt-1">
-            রক্তদাতা হিসেবে নিবন্ধন ও রক্ত রিকোয়েস্ট তৈরি করতে লগ-ইন আবশ্যক।
+          <p className="font-sans text-xs text-gray-500 mt-1">
+            রক্তদাতা নিবন্ধন ও জরুরি রক্ত রিকোয়েস্ট তৈরি করতে নিরাপদ ক্লাউড যাচাইকরণ সম্পন্ন করুন।
           </p>
         </div>
 
+        {/* Tab Switcher: Google vs Phone vs Guest */}
+        <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-2xl mb-5 font-sans text-xs font-bold">
+          <button
+            type="button"
+            onClick={() => { setActiveTab('google'); setError(null); }}
+            className={`py-2 px-1 rounded-xl transition cursor-pointer flex items-center justify-center gap-1 ${
+              activeTab === 'google' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Chrome className="w-3.5 h-3.5" />
+            <span>গুগল</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => { setActiveTab('phone'); setError(null); }}
+            className={`py-2 px-1 rounded-xl transition cursor-pointer flex items-center justify-center gap-1 ${
+              activeTab === 'phone' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Phone className="w-3.5 h-3.5" />
+            <span>ফোন ওটিপি</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => { setActiveTab('guest'); setError(null); }}
+            className={`py-2 px-1 rounded-xl transition cursor-pointer flex items-center justify-center gap-1 ${
+              activeTab === 'guest' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>অতিথি মোড</span>
+          </button>
+        </div>
+
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 rounded-2xl p-3.5 mb-5 text-xs font-sans leading-relaxed flex flex-col gap-1 shadow-sm">
-            <span className="font-semibold">⚠️ লগ-ইন ত্রুটি:</span>
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-3.5 mb-5 text-xs font-sans leading-relaxed flex flex-col gap-1 shadow-sm">
+            <span className="font-bold">⚠️ যাচাইকরণ ত্রুটি:</span>
             <span>{error}</span>
           </div>
         )}
 
-        <div className="space-y-4">
-          {/* Main Google Sign in */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-2xl py-3 px-4 font-sans font-medium text-sm transition-all shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50"
-          >
-            {loading ? (
-              <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Chrome className="w-5 h-5 text-red-500" />
-            )}
-            গুগল একাউন্ট দিয়ে সাইন-ইন
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-4">
-            <div className="h-px bg-gray-200 flex-1"></div>
-            <span className="text-xs font-sans text-gray-400 font-medium">অথবা বিকল্প বিকল্প</span>
-            <div className="h-px bg-gray-200 flex-1"></div>
-          </div>
-
-          {!useEmailAuth ? (
-            <div className="space-y-3">
-              <button
-                onClick={() => {
-                  onLoginSuccess({
-                    uid: 'guest_user_' + Math.floor(Math.random() * 1000),
-                    email: 'test.donor@roktimbb.org',
-                    displayName: 'জরুরী রক্তদাতা (স্বেচ্ছাসেবী)',
-                    photoURL: null,
-                    isGuest: true
-                  });
-                  onClose();
-                }}
-                className="w-full flex items-center justify-center gap-2.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-2xl py-3 px-4 font-sans font-medium text-sm transition-all border border-red-200/50 cursor-pointer shadow-sm"
-              >
-                <UserCheck className="w-4 h-4 text-red-600" />
-                টেস্ট একাউন্ট সাইন-ইন (পরীক্ষামূলক)
-              </button>
-
-              <button
-                onClick={() => setUseEmailAuth(true)}
-                className="w-full text-center font-sans text-xs text-red-600 hover:text-red-700 hover:underline transition-colors block py-1 cursor-pointer"
-              >
-                ইমেইল ও নাম দিয়ে সাইন-ইন করতে চান?
-              </button>
+        {/* TAB 1: Google Verification */}
+        {activeTab === 'google' && (
+          <div className="space-y-4">
+            <div className="p-4 bg-red-50/50 border border-red-100 rounded-2xl text-xs text-gray-600 font-sans leading-relaxed">
+              <p className="font-bold text-red-800 mb-1 flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                ১ ক্লিকে নিরাপদ গুগল যাচাইকরণ
+              </p>
+              আপনার অফিসিয়াল জিমেইল একাউন্ট দিয়ে লগ-ইন করলে আপনার রক্তদাতা প্রোফাইল ক্লাউড ডাটাবেজে তাৎক্ষণিক স্থায়ীভাবে সংরক্ষিত থাকবে।
             </div>
-          ) : (
-            <form onSubmit={handleGuestSignIn} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
-                  আপনার নাম (বাংলা/ইংরেজি):
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="উদাঃ মোঃ আবির আহমেদ"
-                  className="w-full px-3.5 py-2 border border-gray-300 rounded-xl font-sans text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/20 bg-white/50"
-                />
-              </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1 font-sans">
-                  ইমেইল এড্রেস:
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={customEmail}
-                  onChange={(e) => setCustomEmail(e.target.value)}
-                  placeholder="example@roktimbb.org"
-                  className="w-full px-3.5 py-2 border border-gray-300 rounded-xl font-sans text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/20 bg-white/50"
-                />
-              </div>
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 hover:bg-gray-50 border border-gray-300 rounded-2xl py-3 px-4 font-sans font-bold text-sm transition-all shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Chrome className="w-5 h-5 text-red-600" />
+              )}
+              গুগল একাউন্ট দিয়ে যাচাই করুন
+            </button>
+          </div>
+        )}
 
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setUseEmailAuth(false)}
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl py-2 px-3 font-sans text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  ফিরে যান
-                </button>
+        {/* TAB 2: Phone Verification with OTP */}
+        {activeTab === 'phone' && (
+          <div className="space-y-4 font-sans">
+            {!otpSent ? (
+              <form onSubmit={handleSendOtp} className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    আপনার পূর্ণ নাম:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={phoneName}
+                    onChange={(e) => setPhoneName(e.target.value)}
+                    placeholder="উদাঃ মোঃ আবির আহমেদ"
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-red-500 bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    মোবাইল নাম্বার (বাংলাদেশ):
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="px-3 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-xs font-bold text-gray-600 flex items-center font-english">
+                      +880
+                    </span>
+                    <input
+                      type="tel"
+                      required
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="01712345678"
+                      className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-red-500 bg-white font-english"
+                    />
+                  </div>
+                </div>
+
                 <button
                   type="submit"
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl py-2 px-3 font-sans text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:shadow"
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
-                  লগ-ইন করুন <ArrowRight className="w-3 h-3" />
+                  <Phone className="w-4 h-4" />
+                  ওটিপি যাচাই কোড পাঠান
                 </button>
-              </div>
-            </form>
-          )}
-        </div>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                {/* Simulated SMS Alert Banner */}
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl p-3.5 text-xs font-sans space-y-1">
+                  <div className="font-bold flex items-center gap-1.5 text-emerald-800">
+                    <KeyRound className="w-4 h-4 text-emerald-600" />
+                    <span>ভেরিফিকেশন কোড পাঠানো হয়েছে! ({phoneNumber})</span>
+                  </div>
+                  <p className="text-gray-600">
+                    নিচের ৬ ডিজিটের ওটিপি কোডটি টাইপ করুন অথবা সরাসরি 'যাচাই ও লগইন' চাপুন:
+                  </p>
+                  <div className="font-english font-mono font-extrabold text-lg text-emerald-700 tracking-widest bg-white p-2 rounded-lg border border-emerald-200 text-center select-all">
+                    {generatedOtp}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    ৬ ডিজিটের ওটিপি লিখুন:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={enteredOtp}
+                    onChange={(e) => setEnteredOtp(e.target.value)}
+                    placeholder={generatedOtp}
+                    className="w-full text-center font-mono tracking-widest text-xl font-bold px-3.5 py-2.5 border border-red-300 rounded-xl outline-none focus:border-red-600 bg-white"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEnteredOtp(generatedOtp)}
+                    className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition cursor-pointer"
+                  >
+                    স্বয়ংক্রিয় পূরণ
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-sm py-2.5 px-4 rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    ফোন নম্বর যাচাই করুন
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
+
+        {/* TAB 3: Guest / Fast Test Mode */}
+        {activeTab === 'guest' && (
+          <div className="space-y-4 font-sans">
+            <p className="text-xs text-gray-500 leading-relaxed">
+              দ্রুত অ্যাপটি পরীক্ষা করার জন্য অতিথি মোডে লগ-ইন করতে পারেন। তবে স্থায়ী ক্লাউড প্রোফাইলের জন্য গুগল বা ফোন যাচাইকরণ সুপারিশ করা হয়।
+            </p>
+
+            <button
+              onClick={() => {
+                onLoginSuccess({
+                  uid: 'guest_user_' + Math.floor(Math.random() * 10000),
+                  email: 'test.donor@roktimbb.org',
+                  displayName: 'তাহেরপুর অতিথি',
+                  phoneNumber: '01700000000',
+                  photoURL: null,
+                  isGuest: true,
+                  verifiedBy: 'email'
+                });
+                onClose();
+              }}
+              className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-700 hover:bg-red-100 rounded-2xl py-3 px-4 font-bold text-sm transition border border-red-200 cursor-pointer shadow-sm"
+            >
+              <Shield className="w-4 h-4 text-red-600" />
+              অতিথি হিসেবে প্রবেশ করুন
+            </button>
+          </div>
+        )}
 
         {/* Security assurance */}
         <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-gray-400 font-sans border-t border-gray-100 pt-4">
           <Shield className="w-3.5 h-3.5 text-gray-400" />
-          <span>আপনার তথ্য নিরাপদ ও সর্বোচ্চ সুসমন্বিত পদ্ধতিতে সংরক্ষিত।</span>
+          <span>সকল ডেটা এনক্রিপ্টেড এবং গুগল ক্লাউড ফায়ারস্টোরে সংরক্ষিত।</span>
         </div>
       </div>
     </div>

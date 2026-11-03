@@ -3,6 +3,21 @@ import { Donor, BloodRequest } from '../types';
 export const NoticeBn = "রক্তের অভাবে ঝরবে না আর একটিও প্রাণ! তাহেরপুর ও আশেপাশের এলাকার মানুষের সেবায় রাজশাহী কলেজের শিক্ষার্থী সাকিবুল ইসলাম সাব্বিরের উদ্যোগে পথ চলা শুরু করলো ‘রক্তিম ব্লাড ব্যাংক’। আমাদের সাথে স্বেচ্ছাসেবী হিসেবে যুক্ত হতে, ডোনার হিসেবে নাম লেখাতে কিংবা আপনার ক্লিনিক/ডায়াগনস্টিকের বিজ্ঞাপন দিতে আজই যোগাযোগ করুন।";
 export const NoticeEn = "No more lives lost due to lack of blood! Roktim Blood Bank Taherpur has started its journey initiated by Sakibul Islam Sabbir, a student of Rajshahi College, to serve the local community.";
 
+export const occupationsList = [
+  'শিক্ষার্থী (Student)',
+  'চাকুরিজীবী (Service Holder)',
+  'ব্যবসায়ী (Businessman)',
+  'ডাক্তার / স্বাস্থ্যকর্মী (Doctor / Healthcare)',
+  'শিক্ষক / শিক্ষিকা (Teacher / Educator)',
+  'প্রকৌশলী / আইটি বিশেষজ্ঞ (Engineer / IT)',
+  'আইনজীবী (Lawyer)',
+  'ফ্রিল্যান্সার (Freelancer)',
+  'সরকারি কর্মকর্তা (Govt. Employee)',
+  'গৃহিণী (Homemaker)',
+  'কৃষিজীবী / খামারি (Farmer / Agriculture)',
+  'অন্যান্য (Other)'
+];
+
 export const defaultDonors: Donor[] = [
   {
     id: 'donor1',
@@ -10,13 +25,23 @@ export const defaultDonors: Donor[] = [
     email: 'sakib.donor@gmail.com',
     phone: '01712345678',
     bloodGroup: 'O+',
-    isAvailable: true,
-    location: 'তাহেরপুর বাজার, বাগমারা',
     gender: 'পুরুষ',
+    occupation: 'ব্যবসায়ী (Businessman)',
+    address: 'দোকান নং ১২, তাহেরপুর মেইন বাজার, বাগমারা, রাজশাহী',
+    location: 'তাহেরপুর বাজার, বাগমারা',
     age: 28,
+    isAvailable: true,
     isRegisteredDonor: true,
     lastDonatedDate: '2026-03-10',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    isVerified: true,
+    phoneVerified: true,
+    verificationMethod: 'phone',
+    latitude: 24.4262,
+    longitude: 88.8471,
+    locationAccuracy: 12,
+    isLocationSharing: true,
+    lastLocationUpdate: new Date().toISOString()
   },
   {
     id: 'donor2',
@@ -24,13 +49,23 @@ export const defaultDonors: Donor[] = [
     email: 'fahim.donor@gmail.com',
     phone: '01823456789',
     bloodGroup: 'A+',
-    isAvailable: true,
+    gender: 'পুরুষ',
+    occupation: 'শিক্ষার্থী (Student)',
+    address: 'কলেজ রোড, তাহেরপুর ডিগ্রি কলেজ সংলগ্ন, বাগমারা',
     location: 'তাহেরপুর কলেজ মোড়',
-    gender: 'पुरुष',
     age: 24,
+    isAvailable: true,
     isRegisteredDonor: true,
     lastDonatedDate: '2026-04-15',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    isVerified: true,
+    phoneVerified: true,
+    verificationMethod: 'google',
+    latitude: 24.4285,
+    longitude: 88.8452,
+    locationAccuracy: 8,
+    isLocationSharing: true,
+    lastLocationUpdate: new Date().toISOString()
   },
   {
     id: 'donor3',
@@ -38,13 +73,23 @@ export const defaultDonors: Donor[] = [
     email: 'mehedi.b@gmail.com',
     phone: '01934567890',
     bloodGroup: 'B+',
-    isAvailable: true,
-    location: 'হরিতলা, তাহেরপুর',
     gender: 'পুরুষ',
+    occupation: 'চাকুরিজীবী (Service Holder)',
+    address: 'হরিতলা মোড়, তাহেরপুর পৌরসভা, বাগমারা',
+    location: 'হরিতলা, তাহেরপুর',
     age: 32,
+    isAvailable: true,
     isRegisteredDonor: true,
     lastDonatedDate: '2026-01-20',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    isVerified: true,
+    phoneVerified: true,
+    verificationMethod: 'google',
+    latitude: 24.4231,
+    longitude: 88.8496,
+    locationAccuracy: 15,
+    isLocationSharing: true,
+    lastLocationUpdate: new Date().toISOString()
   },
   {
     id: 'donor4',
@@ -52,13 +97,23 @@ export const defaultDonors: Donor[] = [
     email: 'tanvir@gmail.com',
     phone: '01545678901',
     bloodGroup: 'AB+',
-    isAvailable: false,
-    location: 'তাহেরপুর পাইলট উচ্চ বিদ্যালয় ঘাট',
     gender: 'পুরুষ',
+    occupation: 'শিক্ষক / শিক্ষিকা (Teacher / Educator)',
+    address: 'পাইলট স্কুল ঘাট, নদী তীরবর্তী রোড, তাহেরপুর',
+    location: 'তাহেরপুর পাইলট উচ্চ বিদ্যালয় ঘাট',
     age: 26,
+    isAvailable: false,
     isRegisteredDonor: true,
     lastDonatedDate: '2026-05-28',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    isVerified: true,
+    phoneVerified: false,
+    verificationMethod: 'phone',
+    latitude: 24.4298,
+    longitude: 88.8433,
+    locationAccuracy: 20,
+    isLocationSharing: false,
+    lastLocationUpdate: new Date().toISOString()
   },
   {
     id: 'donor5',
@@ -66,13 +121,23 @@ export const defaultDonors: Donor[] = [
     email: 'tanzim.abneg@gmail.com',
     phone: '01356789012',
     bloodGroup: 'A-',
-    isAvailable: true,
+    gender: 'পুরুষ',
+    occupation: 'প্রকৌশলী / আইটি বিশেষজ্ঞ (Engineer / IT)',
+    address: 'রেলওয়ে কোয়ার্টার সংলগ্ন, তাহেরপুর স্টেশন',
     location: 'তাহেরপুর রেলস্টেশন এলাকা',
-    gender: 'पुरुष',
     age: 22,
+    isAvailable: true,
     isRegisteredDonor: true,
     lastDonatedDate: '2026-02-14',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    isVerified: true,
+    phoneVerified: true,
+    verificationMethod: 'google',
+    latitude: 24.4215,
+    longitude: 88.8520,
+    locationAccuracy: 5,
+    isLocationSharing: true,
+    lastLocationUpdate: new Date().toISOString()
   },
   {
     id: 'donor6',
@@ -80,13 +145,23 @@ export const defaultDonors: Donor[] = [
     email: 'jahid.o@gmail.com',
     phone: '01467890123',
     bloodGroup: 'O-',
-    isAvailable: true,
+    gender: 'পুরুষ',
+    occupation: 'ডাক্তার / স্বাস্থ্যকর্মী (Doctor / Healthcare)',
+    address: 'রামরামা স্বাস্থ্য কেন্দ্র এলাকা, তাহেরপুর',
     location: 'রামরামা, তাহেরপুর',
-    gender: 'पुरुष',
     age: 29,
+    isAvailable: true,
     isRegisteredDonor: true,
     lastDonatedDate: '2026-05-01',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    isVerified: true,
+    phoneVerified: true,
+    verificationMethod: 'phone',
+    latitude: 24.4340,
+    longitude: 88.8410,
+    locationAccuracy: 10,
+    isLocationSharing: true,
+    lastLocationUpdate: new Date().toISOString()
   }
 ];
 
@@ -102,9 +177,12 @@ export const defaultRequests: BloodRequest[] = [
     requiredDate: '2026-06-21',
     reason: 'হিমোগ্লোবিন কমে যাওয়া ও রক্তস্বল্পতা',
     status: 'pending',
-    createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+    createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
     requestedBy: 'মোস্তফা কামাল (ছেলে)',
-    requesterUid: 'mock_user'
+    requesterUid: 'mock_user_1',
+    urgencyLevel: 'emergency',
+    latitude: 24.4258,
+    longitude: 88.8475
   },
   {
     id: 'req2',
@@ -117,24 +195,30 @@ export const defaultRequests: BloodRequest[] = [
     requiredDate: '2026-06-20',
     reason: 'জরুরি কার্ডিয়াক অপারেশন',
     status: 'pending',
-    createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+    createdAt: new Date(Date.now() - 3600000 * 8).toISOString(),
     requestedBy: 'আব্দুস সবুর (ভাই)',
-    requesterUid: 'mock_user'
+    requesterUid: 'mock_user_2',
+    urgencyLevel: 'emergency',
+    latitude: 24.3725,
+    longitude: 88.5835
   },
   {
     id: 'req3',
-    patientName: 'মোঃ সাজ্জাদ হোসেন (সার্জারি)',
+    patientName: 'মোছাঃ ফাতেমা বেগম (প্রসূতি)',
     hospitalName: 'তাহেরপুর সেবা সার্জিক্যাল ক্লিনিক',
     location: 'মহিলা কলেজ সংলগ্ন',
     bloodGroup: 'O+',
     units: 1,
     phone: '01511223344',
     requiredDate: '2026-06-19',
-    reason: 'জরুরি এপেন্ডিসাইটিস অপারেশন',
-    status: 'fulfilled',
-    createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-    requestedBy: 'মোঃ রফিক (ভাই)',
-    requesterUid: 'mock_user'
+    reason: 'জরুরি সিজারিয়ান অপারেশন',
+    status: 'pending',
+    createdAt: new Date(Date.now() - 3600000 * 14).toISOString(),
+    requestedBy: 'মোঃ রফিক (স্বামী)',
+    requesterUid: 'mock_user_3',
+    urgencyLevel: 'urgent',
+    latitude: 24.4265,
+    longitude: 88.8460
   }
 ];
 
