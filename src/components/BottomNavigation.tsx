@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Home, Users, Heart, Award, Grid, X, ChevronRight, Sparkles, BookOpen, Share2, Compass, Flame, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PWAInstallButton } from './PWAInstallButton';
+import { AndroidIcon } from './InstallMobileAppSection';
 
 interface BottomNavigationProps {
   currentPage: string;
@@ -42,6 +43,8 @@ export default function BottomNavigation({
     onNavigate(pageId);
   };
 
+  const [copiedLink, setCopiedLink] = useState(false);
+
   const handleShareApp = () => {
     if (navigator.share) {
       navigator.share({
@@ -51,9 +54,9 @@ export default function BottomNavigation({
       }).catch(console.error);
     } else {
       navigator.clipboard.writeText(window.location.origin);
-      alert('ওয়েবসাইট লিংকটি কপি করা হয়েছে! বন্ধুদের সাথে শেয়ার করুন।');
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 3000);
     }
-    setSheetOpen(false);
   };
 
   return (
@@ -149,16 +152,22 @@ export default function BottomNavigation({
               </div>
 
               {/* PWA Mobile App Download Prompt */}
-              <div className="p-3 bg-gradient-to-r from-red-600 to-rose-600 rounded-2xl text-white text-left space-y-2">
+              <div className="p-3 bg-gradient-to-r from-gray-950 via-slate-900 to-red-950 rounded-2xl text-white text-left space-y-2 border border-red-500/20">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold flex items-center gap-1.5">
-                    <Download className="w-4 h-4 text-white" /> রক্তিম অ্যাপ ইনস্টল করুন
+                  <span className="text-xs font-black flex items-center gap-1.5 font-sans">
+                    <AndroidIcon className="w-4 h-4 fill-emerald-400" />
+                    <span>Download Android App</span>
                   </span>
                   <PWAInstallButton variant="compact" />
                 </div>
-                <p className="text-[11px] text-red-100 leading-tight">
-                  ফোনে সরাসরি ইন্সটল করে অফলাইন মোড ও তাত্ক্ষণিক ব্লাড নোটিফিকেশন পান।
+                <p className="text-[11px] text-gray-300 leading-tight font-sans">
+                  ১ ক্লিকে ফোনে ইন্সটল করে অফলাইন মোড ও সার্বক্ষণিক ব্লাড নোটিফিকেশন পান।
                 </p>
+                {copiedLink && (
+                  <p className="text-[10px] text-emerald-400 font-bold font-sans">
+                    ✓ অ্যাপ লিংকটি ক্লিপবোর্ডে কপি করা হয়েছে!
+                  </p>
+                )}
               </div>
 
               {/* Grid of shortcuts */}

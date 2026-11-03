@@ -23,6 +23,7 @@ import BottomNavigation from './components/BottomNavigation';
 import TeamPage from './components/TeamPage';
 import AboutPage from './components/AboutPage';
 import { PWAInstallButton } from './components/PWAInstallButton';
+import InstallMobileAppSection from './components/InstallMobileAppSection';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AppUser } from './types';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -136,6 +137,9 @@ export default function App() {
               onOpenAuth={() => setAuthModalOpen(true)}
               userLoggedIn={!!currentUser}
             />
+
+            {/* 3.5 Install Mobile App Section (Dedicated Download Android App Feature) */}
+            <InstallMobileAppSection />
 
             {/* 4. Core Features Showcase Banner */}
             <div className="w-full max-w-6xl mx-auto py-8 px-4">

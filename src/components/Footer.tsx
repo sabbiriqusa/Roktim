@@ -77,6 +77,20 @@ export default function Footer({ onNavigate, onOpenDevProfile }: FooterProps) {
               </button>
             </li>
             <li>
+              <button
+                onClick={() => {
+                  onNavigate('home');
+                  setTimeout(() => {
+                    const el = document.getElementById('download-mobile-app');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="font-sans text-sm text-red-600 font-bold hover:text-red-750 transition-colors cursor-pointer flex items-center gap-2"
+              >
+                📱 Download Android App (অ্যাপ ইনস্টল)
+              </button>
+            </li>
+            <li>
               <a
                 href="https://www.facebook.com"
                 target="_blank"
