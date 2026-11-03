@@ -46,9 +46,18 @@ export default function AboutNoticeSection() {
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-black/10 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-[11px] md:text-xs font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full border border-white/15 w-fit">
-            <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
-            <span>আমাদের লক্ষ্য ও উদ্যোগ / Our Initiative</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-md border-2 border-white/40 bg-white/10 p-0.5">
+              <img 
+                src="/assets/aistudio/file_00000000015c821194aa85f9e857dff1_7ccd5a14.png" 
+                alt="রক্তিম ব্লাড ব্যাংক লোগো" 
+                className="w-full h-full object-cover rounded-[10px]"
+              />
+            </div>
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-[11px] md:text-xs font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full border border-white/15 w-fit">
+              <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
+              <span>আমাদের লক্ষ্য ও উদ্যোগ / Our Initiative</span>
+            </div>
           </div>
 
           <h2 className="font-sans text-3xl md:text-5xl font-black tracking-tight leading-tight">

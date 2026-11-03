@@ -79,6 +79,7 @@ export async function syncUserProfileToFirebase(donor: Donor): Promise<void> {
       latitude: donor.latitude || null,
       longitude: donor.longitude || null,
       isRegisteredDonor: true,
+      hasCompletedRegistration: true,
       updatedAt: serverTimestamp()
     }, { merge: true });
 
@@ -87,3 +88,25 @@ export async function syncUserProfileToFirebase(donor: Donor): Promise<void> {
     throw error;
   }
 }
+
+/**
+ * Retrieve user and donor profile from Cloud Firestore by UID
+ */
+export async function getUserProfileFromFirebase(uid: string): Promise<{ user?: any; donor?: Donor } | null> {
+  if (!uid) return null;
+  try {
+    const donorRef = doc(db, 'donors', uid);
+    const donorSnap = await getDoc(donorRef);
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+
+    return {
+      user: userSnap.exists() ? userSnap.data() : null,
+      donor: donorSnap.exists() ? (donorSnap.data() as Donor) : undefined,
+    };
+  } catch (error) {
+    console.warn("Could not retrieve user profile from Firestore:", error);
+    return null;
+  }
+}
+

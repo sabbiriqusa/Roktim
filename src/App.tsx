@@ -26,32 +26,40 @@ import { PWAInstallButton } from './components/PWAInstallButton';
 import InstallMobileAppSection from './components/InstallMobileAppSection';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AppUser } from './types';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './lib/firebase';
+import SplashScreen from './components/SplashScreen';
+import AuthScreen from './components/AuthScreen';
 import { UserPlus, Heart, PhoneIncoming, Flame, Compass, BellRing } from 'lucide-react';
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<string>('home');
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
+  const [hasEnteredMainWebsite, setHasEnteredMainWebsite] = useState<boolean>(() => {
+    return sessionStorage.getItem('roktim_main_website_entered') === 'true';
+  });
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [devProfileOpen, setDevProfileOpen] = useState(false);
   const [adminPassOpen, setAdminPassOpen] = useState(false);
 
   useEffect(() => {
-    // Listen for Firebase Auth changes
+    // Listen for Firebase Auth changes without automatic home redirect
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setCurrentUser({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || 'স্বেচ্ছাসেবী',
-          phoneNumber: user.phoneNumber,
-          photoURL: user.photoURL,
-          isGuest: false,
-          verifiedBy: 'google'
+        setCurrentUser((prev) => {
+          return {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || 'স্বেচ্ছাসেবী',
+            phoneNumber: user.phoneNumber,
+            photoURL: user.photoURL,
+            isGuest: false,
+            verifiedBy: 'google',
+            ...prev
+          };
         });
       } else {
-        // Fallback check to see if we stored a phone verified or guest user locally
         const storedVerified = sessionStorage.getItem('bb_verified_user') || sessionStorage.getItem('bb_guest_user');
         if (storedVerified) {
           try {
@@ -68,21 +76,56 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleLoginSuccess = (user: AppUser) => {
+  // When user explicitly clicks "Proceed to Main Website" after completing registration and permissions
+  const handleProceedToMainPage = (user: AppUser) => {
     setCurrentUser(user);
+    setHasEnteredMainWebsite(true);
+    sessionStorage.setItem('roktim_main_website_entered', 'true');
     sessionStorage.setItem('bb_verified_user', JSON.stringify(user));
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      console.warn("Logout error:", e);
+    }
     setCurrentUser(null);
+    setHasEnteredMainWebsite(false);
     sessionStorage.removeItem('bb_verified_user');
     sessionStorage.removeItem('bb_guest_user');
+    sessionStorage.removeItem('roktim_main_website_entered');
+    setCurrentPage('home');
   };
 
   const handleNavigation = (pageId: string) => {
     setCurrentPage(pageId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // 1. Display splash screen with app logo, name, and blood donation slogan
+  if (showSplash) {
+    return (
+      <SplashScreen 
+        onComplete={() => setShowSplash(false)} 
+        isAuthenticated={hasEnteredMainWebsite && !!currentUser} 
+      />
+    );
+  }
+
+  // 2. Mandatory Gate: A user CANNOT be taken to the main page until they have
+  // manually completed the registration process and granted location & notification permissions.
+  // There is ZERO automatic redirection.
+  if (!hasEnteredMainWebsite || !currentUser) {
+    return (
+      <AuthScreen 
+        currentUser={currentUser}
+        onProceedToMainPage={handleProceedToMainPage}
+        onReplaySplash={() => setShowSplash(true)}
+        onLogout={handleLogout}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-between relative overflow-x-hidden selection:bg-red-200 bg-stone-50/50">
@@ -101,6 +144,7 @@ export default function App() {
         onNavigate={handleNavigation}
         currentPage={currentPage}
         onLogout={handleLogout}
+        onReplaySplash={() => setShowSplash(true)}
       />
 
       {/* Main Container */}
@@ -304,7 +348,7 @@ export default function App() {
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
+        onLoginSuccess={handleProceedToMainPage}
       />
 
       {/* Developer Profile Modal Dialog popup */}

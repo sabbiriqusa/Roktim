@@ -14,9 +14,13 @@ export default function Footer({ onNavigate, onOpenDevProfile }: FooterProps) {
         
         {/* Brand & Vision */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-white blood-drop-pulse">
-              <Heart className="w-5 h-5 fill-white" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-red-500/20 blood-drop-pulse border border-red-500/30 bg-red-600">
+              <img 
+                src="/assets/aistudio/file_00000000015c821194aa85f9e857dff1_7ccd5a14.png" 
+                alt="রক্তিম ব্লাড ব্যাংক লোগো" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="font-sans text-xl md:text-2xl font-black tracking-tight text-gray-900">
               রক্তিম <span className="text-red-600">ব্লাড ব্যাংক</span>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppUser } from '../types';
 import { Heart, LogIn, LogOut, Menu, X, User, Award, Flame, Compass, ShieldCheck } from 'lucide-react';
-import { signOut } from '../lib/firebase';
+import { auth, signOut } from '../lib/firebase';
 import { PWAInstallButton } from './PWAInstallButton';
 import NotificationCenter from './NotificationCenter';
 
@@ -11,9 +11,10 @@ interface NavbarProps {
   onNavigate: (page: string) => void;
   currentPage: string;
   onLogout: () => void;
+  onReplaySplash?: () => void;
 }
 
-export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPage, onLogout }: NavbarProps) {
+export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPage, onLogout, onReplaySplash }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -30,11 +31,13 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
 
   const handleLogoutClick = async () => {
     try {
-      await signOut;
+      await signOut(auth);
       onLogout();
       setDropdownOpen(false);
     } catch (err) {
       console.error("Logout failed:", err);
+      onLogout();
+      setDropdownOpen(false);
     }
   };
 
@@ -52,8 +55,12 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
           onClick={() => handleMenuClick('home')} 
           className="flex items-center gap-2.5 cursor-pointer group shrink-0"
         >
-          <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-500/20 blood-drop-pulse transition-transform group-hover:scale-105 duration-300">
-            <Heart className="w-5 h-5 fill-white" />
+          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-red-500/20 blood-drop-pulse transition-transform group-hover:scale-105 duration-300 border border-red-500/30 bg-red-600">
+            <img 
+              src="/assets/aistudio/file_00000000015c821194aa85f9e857dff1_7ccd5a14.png" 
+              alt="রক্তিম লোগো" 
+              className="w-full h-full object-cover"
+            />
           </div>
           <span className="font-sans text-base sm:text-lg md:text-xl font-black text-gray-950 tracking-tight">
             রক্তিম <span className="text-red-600 transition-colors group-hover:text-red-700">ব্লাড ব্যাংক</span>
@@ -164,6 +171,19 @@ export default function Navbar({ currentUser, onOpenAuth, onNavigate, currentPag
                       <Compass className="w-3.5 h-3.5 text-emerald-600" />
                       লাইভ জিপিএস লোকেশন শেয়ার
                     </button>
+
+                    {onReplaySplash && (
+                      <button
+                        onClick={() => {
+                          onReplaySplash();
+                          setDropdownOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2 cursor-pointer"
+                      >
+                        <Heart className="w-3.5 h-3.5 text-red-600" />
+                        লোগো স্প্ল্যাশ ও স্লোগান দেখুন
+                      </button>
+                    )}
 
                     <button
                       onClick={handleLogoutClick}

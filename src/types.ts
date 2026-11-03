@@ -90,4 +90,16 @@ export interface AppUser {
   isGuest?: boolean;
   phoneVerified?: boolean;
   verifiedBy?: 'google' | 'phone' | 'email';
+  isRegistrationComplete?: boolean;
+  hasLocationPermission?: boolean;
+  hasNotificationPermission?: boolean;
+  hasManuallyProceeded?: boolean;
+  bloodGroup?: string;
+  gender?: string;
+  occupation?: string;
+  address?: string;
+  location?: string;
+  age?: number;
+  latitude?: number;
+  longitude?: number;
 }

@@ -45,8 +45,18 @@ export default function AboutPage() {
       id="about-page-container" 
       className="max-w-4xl mx-auto px-4 py-6 md:py-10 space-y-10 animate-in fade-in duration-300"
     >
-      {/* 1. Header Banner */}
-      <div className="text-center space-y-2">
+      {/* 1. Header Banner with Official Emblem */}
+      <div className="text-center space-y-3">
+        <div className="flex justify-center">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shadow-lg shadow-red-500/20 border-2 border-red-500/30 bg-red-600 p-0.5">
+            <img 
+              src="/assets/aistudio/file_00000000015c821194aa85f9e857dff1_7ccd5a14.png" 
+              alt="রক্তিম ব্লাড ব্যাংক অফিসিয়াল লোগো" 
+              className="w-full h-full object-cover rounded-[14px]"
+            />
+          </div>
+        </div>
+
         <span className="font-sans text-[10px] font-black tracking-widest text-red-600 uppercase bg-red-50 border border-red-200/50 px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-xs">
           <BookOpen className="w-3.5 h-3.5 text-red-600" />
           আমাদের ইতিহাস ও দর্শন / Our Story
@@ -54,6 +64,9 @@ export default function AboutPage() {
         <h2 className="font-sans text-2xl md:text-3xl font-black text-gray-950 leading-tight">
           রক্তিম ব্লাড ব্যাংক তাহেরপুর
         </h2>
+        <div className="inline-block px-3.5 py-1 bg-red-100/70 text-red-700 font-sans text-xs font-bold rounded-full">
+          "এক ফোঁটা রক্ত, একটি জীবন — রক্তদানে বাঁচাই জীবন"
+        </div>
         <p className="font-sans text-xs md:text-sm text-stone-500 max-w-xl mx-auto leading-relaxed">
           জরুরি মুহূর্তে ১ ব্যাগ রক্তের অভাবে যেন কোনো রোগীর জীবন বিপন্ন না হয়, সেই দায়বদ্ধতা থেকে গড়ে তোলা তাহেরপুর ও বাগমারা অঞ্চলের রক্তদাতাদের সমন্বয় নেটওয়ার্ক।
         </p>

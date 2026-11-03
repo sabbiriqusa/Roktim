@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Donor, AppUser } from '../types';
 import { bloodGroups, taherpurLocations, occupationsList } from '../utils/defaultData';
+import { processAndCompressImage, MAX_PHOTO_SIZE_MB } from '../utils/imageUtils';
 import { 
   Lock, Heart, ShieldAlert, BadgeCheck, Phone, MapPin, Edit, Check, 
   Calendar, ToggleLeft, ToggleRight, User, Award, Download, CheckCircle, 
-  Briefcase, Mail, Compass, CloudCheck, Sparkles, Navigation 
+  Briefcase, Mail, Compass, CloudCheck, Sparkles, Navigation,
+  Camera, Upload, Trash2, AlertCircle
 } from 'lucide-react';
 
 interface RegistrationFormProps {
@@ -41,6 +43,9 @@ export default function RegistrationForm({ currentUser, onOpenAuth }: Registrati
 
   // Supplementary registry detail fields
   const [photoURL, setPhotoURL] = useState('');
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [institution, setInstitution] = useState('');
   const [workOrganization, setWorkOrganization] = useState('');
   const [role, setRole] = useState('রক্তদাতা / Blood Donor');
@@ -140,6 +145,32 @@ export default function RegistrationForm({ currentUser, onOpenAuth }: Registrati
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
+  };
+
+  const handleImageFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageError(null);
+    setImageUploading(true);
+
+    try {
+      const compressedDataUrl = await processAndCompressImage(file, MAX_PHOTO_SIZE_MB);
+      setPhotoURL(compressedDataUrl);
+    } catch (err: any) {
+      console.warn("Image upload error:", err);
+      setImageError(err.message || 'ছবি আপলোড করতে ব্যর্থ হয়েছে। ২ এমবি-র কম সাইজের ছবি দিন।');
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoURL('');
+    setImageError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -514,9 +545,18 @@ export default function RegistrationForm({ currentUser, onOpenAuth }: Registrati
                       </span>
                     </div>
                   </div>
-                  <span className="font-sans text-xs bg-white/20 backdrop-blur-md px-3 py-1 rounded-full font-bold">
-                    {donorProfile.bloodGroup}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-xl overflow-hidden border border-white/40 shadow-sm bg-white/10 p-0.5">
+                      <img 
+                        src="/assets/aistudio/file_00000000015c821194aa85f9e857dff1_7ccd5a14.png" 
+                        alt="রক্তিম সিল" 
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                    <span className="font-sans text-xs bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-xl font-black border border-white/30 text-white">
+                      {donorProfile.bloodGroup}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-1 pt-2">
@@ -801,6 +841,98 @@ export default function RegistrationForm({ currentUser, onOpenAuth }: Registrati
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Profile Photo Upload Option (Direct Device Upload with Size Limit) */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                  <Camera className="w-3.5 h-3.5 text-red-600" />
+                  <span>প্রোফাইল ছবি (Profile Picture - ডিভাইস থেকে আপলোড):</span>
+                </label>
+                <span className="text-[10px] font-bold text-red-700 bg-red-50 border border-red-200/80 px-2 py-0.5 rounded-lg">
+                  সর্বোচ্চ সাইজ: ২ মেগাবাইট (Max 2MB)
+                </span>
+              </div>
+
+              {/* Hidden File Input for Device Image Selection */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageFileSelect}
+                className="hidden"
+              />
+
+              {photoURL ? (
+                <div className="p-3.5 bg-red-50/40 border border-red-200 rounded-2xl flex items-center justify-between gap-3 animate-in fade-in">
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-red-500 shadow-md bg-white shrink-0">
+                      <img 
+                        src={photoURL} 
+                        alt="Uploaded donor photo" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="text-xs space-y-0.5">
+                      <span className="font-bold text-gray-900 flex items-center gap-1">
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-600 inline shrink-0" />
+                        ছবি সফলভাবে সংযুক্ত হয়েছে
+                      </span>
+                      <span className="text-[11px] text-gray-500 block">
+                        ডিজিটাল রক্তদাতা আইডি কার্ড ও প্রোফাইল ব্যাজে প্রদর্শিত হবে।
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 transition cursor-pointer flex items-center gap-1 shadow-xs"
+                    >
+                      <Upload className="w-3 h-3 text-red-600" />
+                      <span>পরিবর্তন</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      className="p-1.5 bg-white hover:bg-red-50 border border-red-200 text-red-600 rounded-xl transition cursor-pointer shadow-xs"
+                      title="ছবি মুছুন"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-gray-300 hover:border-red-400 bg-gray-50/70 hover:bg-red-50/30 rounded-2xl p-4 transition-all cursor-pointer text-center space-y-2 group"
+                >
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-red-600 mx-auto shadow-xs border border-gray-200 group-hover:scale-105 transition-transform">
+                    {imageUploading ? (
+                      <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Upload className="w-6 h-6" />
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-gray-800 block group-hover:text-red-600 transition-colors">
+                      {imageUploading ? 'ছবি আপলোড ও প্রসেসিং হচ্ছে...' : 'ডিভাইস থেকে ছবি আপলোড করুন'}
+                    </span>
+                    <span className="text-[11px] text-gray-500 block mt-0.5">
+                      ক্যামেরা বা মোবাইল গ্যালারি থেকে ছবি সিলেক্ট করুন (সর্বোচ্চ সাইজ: ২ এমবি / 2MB)
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {imageError && (
+                <div className="text-xs text-red-700 bg-red-50 border border-red-200 p-2.5 rounded-xl flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+                  <span>{imageError}</span>
+                </div>
+              )}
             </div>
 
             {/* ROW 5: Real-time GPS Location Detection Box */}

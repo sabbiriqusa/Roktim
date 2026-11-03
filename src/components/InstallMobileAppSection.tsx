@@ -211,9 +211,13 @@ export default function InstallMobileAppSection() {
                     
                     {/* App Header Inside Phone */}
                     <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-7 h-7 bg-red-600 rounded-lg flex items-center justify-center text-white shadow-sm">
-                          <span className="text-xs font-black">র</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl overflow-hidden shadow-sm border border-red-200 bg-red-600">
+                          <img 
+                            src="/assets/aistudio/file_00000000015c821194aa85f9e857dff1_7ccd5a14.png" 
+                            alt="রক্তিম অ্যাপ আইকন" 
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <div className="text-left">
                           <div className="text-[11px] font-black text-gray-900 font-sans leading-none">রক্তিম ব্লাড ব্যাংক</div>

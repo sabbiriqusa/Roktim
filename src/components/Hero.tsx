@@ -63,8 +63,22 @@ export default function Hero({ onNavigate, onOpenAuth, userLoggedIn }: HeroProps
   return (
     <div className="w-full max-w-6xl mx-auto py-10 px-4 text-center space-y-10 relative z-10">
       
-      {/* Intro Text header */}
+      {/* Intro Text header with official logo badge */}
       <div className="space-y-4">
+        
+        {/* Official App Logo Emblem */}
+        <div className="flex justify-center">
+          <div className="relative group cursor-pointer" onClick={() => onNavigate('about')}>
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl overflow-hidden shadow-2xl shadow-red-500/25 border-2 border-red-500/30 bg-gradient-to-br from-red-600 to-rose-700 p-1 group-hover:scale-105 transition-transform duration-300">
+              <img 
+                src="/assets/aistudio/file_00000000015c821194aa85f9e857dff1_7ccd5a14.png" 
+                alt="রক্তিম ব্লাড ব্যাংক তাহেরপুর" 
+                className="w-full h-full object-cover rounded-2xl"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 font-sans text-xs font-semibold px-4 py-1.5 rounded-full border border-red-200/50 shadow-inner">
           <MapPin className="w-3.5 h-3.5" />
           <span>তাহেরপুর পৌর এলাকার ডিজিটাল ব্লাড নেটওয়ার্ক</span>
@@ -77,6 +91,11 @@ export default function Hero({ onNavigate, onOpenAuth, userLoggedIn }: HeroProps
             <span className="absolute -bottom-2 left-0 right-0 h-1.5 bg-red-100 rounded-full -z-10" />
           </span>
         </h1>
+
+        {/* Blood donation slogan */}
+        <div className="inline-block px-4 py-1 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white rounded-full font-sans text-xs sm:text-sm font-bold shadow-md shadow-red-500/20">
+          "এক ফোঁটা রক্ত, একটি জীবন — রক্তদানে বাঁচাই জীবন"
+        </div>
         
         <p className="font-sans text-sm md:text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
           একটি জীবন রক্ষাকারী ডিজিটাল প্ল্যাটফর্ম। রক্তের সন্ধান করুন, লাইভ লোকেশন রাডারে নিকটবর্তী দাতা খুঁজুন এবং স্বয়ংক্রিয় নোটিফিকেশনের মাধ্যমে রক্ত রিকোয়েস্ট সম্প্রচার করুন।
